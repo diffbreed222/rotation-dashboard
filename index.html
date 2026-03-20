@@ -5,120 +5,97 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Thematic Rotation Dashboard</title>
 <style>
-  :root {
-    --bg: #ffffff; --bg2: #f5f5f4; --bg3: #efede8;
-    --text: #1a1a18; --text2: #6b6b67; --text3: #9c9a92;
-    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
-    --info-bg: #e6f1fb; --info-text: #0c447c;
-    --warn-bg: #faeeda; --warn-text: #633806;
-    --success-bg: #eaf3de; --success-text: #27500a;
-    --danger-bg: #fcebeb; --danger-text: #791f1f;
-    --radius: 8px; --radius-lg: 12px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2b;
-      --text: #e8e6de; --text2: #9c9a92; --text3: #6b6b67;
-      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
-      --info-bg: #0c447c; --info-text: #b5d4f4;
-      --warn-bg: #633806; --warn-text: #fac775;
-      --success-bg: #27500a; --success-text: #c0dd97;
-      --danger-bg: #791f1f; --danger-text: #f7c1c1;
-    }
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 14px; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; }
-  .page { max-width: 1280px; margin: 0 auto; padding: 1rem; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: #378ADD; }
-  .brand-title { font-size: 15px; font-weight: 600; }
-  .brand-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
-  .topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .tf-tabs { display: flex; gap: 3px; }
-  .tf-btn { padding: 4px 12px; font-size: 12px; border: 0.5px solid var(--border2); border-radius: 6px; background: transparent; color: var(--text2); cursor: pointer; font-family: inherit; transition: all .15s; }
-  .tf-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-  .badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
-  .badge-warn { background: var(--warn-bg); color: var(--warn-text); }
-  .badge-live { background: var(--success-bg); color: var(--success-text); }
-  .icon-btn { padding: 4px 12px; font-size: 12px; border: 0.5px solid var(--border2); border-radius: 6px; background: transparent; color: var(--text2); cursor: pointer; font-family: inherit; transition: background .1s; }
-  .icon-btn:hover { background: var(--bg2); }
-  .icon-btn:disabled { opacity: .5; cursor: not-allowed; }
-  .layout { display: grid; grid-template-columns: 220px 1fr; gap: 12px; align-items: start; }
-  @media (max-width: 680px) { .layout { grid-template-columns: 1fr; } }
-  .sidebar { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; position: sticky; top: 1rem; }
-  .sidebar-sec { padding: 10px 12px; border-bottom: 0.5px solid var(--border); }
-  .sidebar-sec:last-child { border-bottom: none; }
-  .sec-lbl { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
-  .sector-item { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 5px 8px; border-radius: 7px; cursor: pointer; font-size: 12px; transition: background .1s; }
-  .sector-item:hover { background: var(--bg2); }
-  .sector-item.active { background: var(--info-bg); color: var(--info-text); }
-  .s-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .s-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .s-chg { font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-  .pos { color: #16a34a; } .neg { color: #dc2626; }
-  .ai-input-row { display: flex; gap: 6px; }
-  .ai-input-row input { flex: 1; padding: 6px 10px; font-size: 12px; border: 0.5px solid var(--border2); border-radius: 7px; background: var(--bg2); color: var(--text); font-family: inherit; outline: none; }
-  .ai-input-row input:focus { border-color: #378ADD; }
-  .ai-input-row button { padding: 6px 10px; font-size: 12px; border: 0.5px solid var(--border2); border-radius: 7px; background: transparent; color: var(--text); cursor: pointer; font-family: inherit; white-space: nowrap; }
-  .ai-input-row button:hover { background: var(--bg2); }
-  .ai-suggestion { margin-top: 8px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px; font-size: 12px; }
-  .sug-row { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 3px; }
-  .sug-lbl { font-size: 10px; color: var(--text2); }
-  .sug-val { font-size: 11px; font-weight: 600; text-align: right; }
-  .sug-rationale { font-size: 10px; color: var(--text2); margin: 5px 0 8px; line-height: 1.4; }
-  .sug-domain { margin-bottom: 6px; }
-  .sug-domain-name { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
-  .ticker-pills { display: flex; flex-wrap: wrap; gap: 3px; }
-  .tp { font-size: 10px; font-family: 'SF Mono', 'Fira Code', monospace; background: var(--bg); border: 0.5px solid var(--border2); border-radius: 4px; padding: 2px 5px; }
-  .add-btn { display: block; width: 100%; margin-top: 8px; padding: 5px; font-size: 11px; border: 0.5px solid var(--border2); border-radius: 6px; background: transparent; color: var(--text); cursor: pointer; font-family: inherit; transition: background .1s; }
-  .add-btn:hover { background: var(--bg3); }
-  .thinking { font-size: 11px; color: var(--text2); padding: 4px 0; }
-  .success-msg { font-size: 11px; color: var(--success-text); background: var(--success-bg); border-radius: 6px; padding: 5px 8px; margin-top: 6px; }
-  .err-msg { font-size: 11px; color: var(--danger-text); background: var(--danger-bg); border-radius: 6px; padding: 5px 8px; margin-top: 6px; }
-  .content { display: flex; flex-direction: column; gap: 10px; }
-  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .card-header { padding: 8px 14px; border-bottom: 0.5px solid var(--border); background: var(--bg2); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
-  .breadcrumb { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; font-size: 12px; color: var(--text2); }
-  .bc-link { color: #378ADD; cursor: pointer; text-decoration: none; }
-  .bc-link:hover { text-decoration: underline; }
-  .bc-sep { opacity: .4; }
-  .back-btn { font-size: 11px; color: #378ADD; cursor: pointer; border: none; background: none; font-family: inherit; padding: 0; }
-  .back-btn:hover { text-decoration: underline; }
-  .heatmap-grid { display: grid; gap: 5px; padding: 10px; }
-  .heat-cell { padding: 10px 12px; border-radius: 8px; cursor: pointer; position: relative; min-height: 72px; transition: transform .1s, filter .1s; }
-  .heat-cell:hover { transform: scale(1.015); filter: brightness(1.05); }
-  .hc-name { font-size: 11px; font-weight: 600; margin-bottom: 3px; line-height: 1.3; }
-  .hc-chg { font-size: 18px; font-weight: 600; line-height: 1; }
-  .hc-meta { font-size: 10px; margin-top: 3px; opacity: .7; }
-  .drill-hint { position: absolute; bottom: 5px; right: 8px; font-size: 9px; opacity: .35; }
-  .ticker-area { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .ticker-grid { display: flex; flex-wrap: wrap; gap: 5px; padding: 12px; }
-  .ticker-card { padding: 7px 11px; border-radius: 7px; border: 0.5px solid var(--border); min-width: 86px; background: var(--bg2); }
-  .tc-sym { font-size: 11px; font-weight: 700; font-family: 'SF Mono', 'Fira Code', monospace; }
-  .tc-chg { font-size: 14px; font-weight: 600; }
-  .tc-name { font-size: 10px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
-  .status-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); padding: 7px 14px; border-top: 0.5px solid var(--border); }
-  .pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
-  .pulse.live { background: #22c55e; }
-  .empty { text-align: center; padding: 2rem; color: var(--text2); font-size: 13px; }
+  :root{--bg:#ffffff;--bg2:#f5f5f4;--bg3:#efede8;--text:#1a1a18;--text2:#6b6b67;--text3:#9c9a92;--border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);--info-bg:#e6f1fb;--info-text:#0c447c;--warn-bg:#faeeda;--warn-text:#633806;--success-bg:#eaf3de;--success-text:#27500a;--danger-bg:#fcebeb;--danger-text:#791f1f;--radius:8px;--radius-lg:12px}
+  @media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#e8e6de;--text2:#9c9a92;--text3:#6b6b67;--border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.2);--info-bg:#0c447c;--info-text:#b5d4f4;--warn-bg:#633806;--warn-text:#fac775;--success-bg:#27500a;--success-text:#c0dd97;--danger-bg:#791f1f;--danger-text:#f7c1c1}}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:14px}
+  .page{max-width:1300px;margin:0 auto;padding:1rem}
+  .topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1rem;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px}
+  .brand-title{font-size:15px;font-weight:600}
+  .brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
+  .topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tf-tabs{display:flex;gap:3px}
+  .tf-btn{padding:4px 12px;font-size:12px;border:0.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit}
+  .tf-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+  .badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500}
+  .badge-warn{background:var(--warn-bg);color:var(--warn-text)}
+  .badge-live{background:var(--success-bg);color:var(--success-text)}
+  .icon-btn{padding:4px 12px;font-size:12px;border:0.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;white-space:nowrap}
+  .icon-btn:hover{background:var(--bg2)}
+  .icon-btn:disabled{opacity:.5;cursor:not-allowed}
+  .layout{display:grid;grid-template-columns:220px 1fr;gap:12px;align-items:start}
+  @media(max-width:680px){.layout{grid-template-columns:1fr}}
+  .sidebar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:1rem}
+  .sidebar-sec{padding:10px 12px;border-bottom:0.5px solid var(--border)}
+  .sidebar-sec:last-child{border-bottom:none}
+  .sec-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+  .sector-item{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12px;transition:background .1s}
+  .sector-item:hover{background:var(--bg2)}
+  .sector-item.active{background:var(--info-bg);color:var(--info-text)}
+  .s-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .s-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .s-chg{font-size:10px;font-weight:600;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .pos{color:#16a34a}.neg{color:#dc2626}
+  .ai-row{display:flex;gap:6px}
+  .ai-row input{flex:1;padding:6px 10px;font-size:12px;border:0.5px solid var(--border2);border-radius:7px;background:var(--bg2);color:var(--text);font-family:inherit;outline:none}
+  .ai-row input:focus{border-color:#378ADD}
+  .ai-row button{padding:6px 10px;font-size:12px;border:0.5px solid var(--border2);border-radius:7px;background:transparent;color:var(--text);cursor:pointer;font-family:inherit;white-space:nowrap}
+  .ai-row button:hover{background:var(--bg2)}
+  .ai-sug{margin-top:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px;font-size:12px}
+  .sug-row{display:flex;justify-content:space-between;gap:6px;margin-bottom:3px}
+  .sug-lbl{font-size:10px;color:var(--text2)}
+  .sug-val{font-size:11px;font-weight:600;text-align:right}
+  .sug-rat{font-size:10px;color:var(--text2);margin:5px 0 8px;line-height:1.4}
+  .sug-dom{margin-bottom:6px}
+  .sug-dom-name{font-size:11px;font-weight:600;margin-bottom:3px}
+  .tpills{display:flex;flex-wrap:wrap;gap:3px}
+  .tp{font-size:10px;font-family:monospace;background:var(--bg);border:0.5px solid var(--border2);border-radius:4px;padding:2px 5px}
+  .add-btn{display:block;width:100%;margin-top:8px;padding:5px;font-size:11px;border:0.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--text);cursor:pointer;font-family:inherit}
+  .add-btn:hover{background:var(--bg3)}
+  .msg{font-size:11px;padding:5px 8px;border-radius:6px;margin-top:6px}
+  .msg.ok{color:var(--success-text);background:var(--success-bg)}
+  .msg.err{color:var(--danger-text);background:var(--danger-bg)}
+  .msg.info{color:var(--text2)}
+  .content{display:flex;flex-direction:column;gap:10px}
+  .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .card-hdr{padding:8px 14px;border-bottom:0.5px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .breadcrumb{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:var(--text2)}
+  .bcl{color:#378ADD;cursor:pointer}
+  .bcl:hover{text-decoration:underline}
+  .bcs{opacity:.4}
+  .back-btn{font-size:11px;color:#378ADD;cursor:pointer;border:none;background:none;font-family:inherit;padding:0}
+  .back-btn:hover{text-decoration:underline}
+  .hm-grid{display:grid;gap:5px;padding:10px}
+  .hm-cell{padding:10px 12px;border-radius:8px;cursor:pointer;position:relative;min-height:74px;transition:transform .1s,filter .1s}
+  .hm-cell:hover{transform:scale(1.015);filter:brightness(1.05)}
+  .hc-name{font-size:11px;font-weight:600;margin-bottom:3px;line-height:1.3}
+  .hc-chg{font-size:18px;font-weight:600;line-height:1}
+  .hc-meta{font-size:10px;margin-top:3px;opacity:.7}
+  .hc-hint{position:absolute;bottom:5px;right:8px;font-size:9px;opacity:.35}
+  .tk-area{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .tk-grid{display:flex;flex-wrap:wrap;gap:5px;padding:12px}
+  .tk-card{padding:7px 11px;border-radius:7px;border:0.5px solid var(--border);min-width:86px;background:var(--bg2)}
+  .tk-sym{font-size:11px;font-weight:700;font-family:monospace}
+  .tk-chg{font-size:14px;font-weight:600}
+  .tk-name{font-size:10px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+  .status-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);padding:7px 14px;border-top:0.5px solid var(--border)}
+  .pulse{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0}
+  .pulse.live{background:#22c55e}
+  .prog{height:3px;background:var(--info-bg)}
+  .prog-fill{height:100%;background:#378ADD;transition:width .3s;border-radius:2px}
 </style>
 </head>
 <body>
 <div class="page">
   <div class="topbar">
-    <div class="brand">
-      <div class="brand-dot"></div>
-      <div>
-        <div class="brand-title">Thematic Rotation Dashboard</div>
-        <div class="brand-sub">SP500 · NDX100 · DJIA · 5-level taxonomy · AI-assisted</div>
-      </div>
+    <div>
+      <div class="brand-title">Thematic Rotation Dashboard</div>
+      <div class="brand-sub">SP500 · NDX100 · DJIA · 5-level deep · AI-assisted · FMP live data</div>
     </div>
     <div class="topbar-right">
       <span id="demoBadge" class="badge badge-warn">DEMO</span>
       <span id="liveBadge" class="badge badge-live" style="display:none">LIVE</span>
-      <button class="icon-btn" id="fetchBtn" onclick="fetchAllPrices()">↺ Live prices</button>
+      <button class="icon-btn" id="fetchBtn" onclick="fetchAll()">↺ Fetch live prices</button>
       <div class="tf-tabs" id="tfTabs">
         <button class="tf-btn active" data-tf="1D">1D</button>
         <button class="tf-btn" data-tf="1W">1W</button>
@@ -127,7 +104,6 @@
       </div>
     </div>
   </div>
-
   <div class="layout">
     <div class="sidebar">
       <div class="sidebar-sec">
@@ -136,465 +112,408 @@
       </div>
       <div class="sidebar-sec">
         <div class="sec-lbl">AI Theme Builder</div>
-        <div class="ai-input-row">
+        <div class="ai-row">
           <input id="aiInput" placeholder="e.g. Quantum computing…" onkeydown="if(event.key==='Enter')runAI()"/>
           <button id="aiBtn" onclick="runAI()">Ask ↗</button>
         </div>
         <div id="aiResult"></div>
       </div>
     </div>
-
     <div class="content">
       <div class="card">
-        <div class="card-header">
+        <div class="card-hdr">
           <div class="breadcrumb" id="breadcrumb">All sectors</div>
           <button class="back-btn" id="backBtn" style="display:none" onclick="drillUp()">← Back</button>
         </div>
-        <div id="heatmapArea"></div>
+        <div class="prog" id="prog" style="display:none"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div id="hmArea"></div>
         <div class="status-row">
-          <span class="pulse" id="pulseDot"></span>
-          <span id="statusText">Demo data · click any cell to drill down</span>
+          <span class="pulse" id="dot"></span>
+          <span id="statusTxt">Demo data · click "Fetch live prices" to load real market data</span>
         </div>
       </div>
-      <div id="tickerArea" style="display:none" class="ticker-area">
-        <div class="card-header"><span style="font-size:12px;font-weight:600" id="tickerAreaTitle">Tickers</span></div>
-        <div class="ticker-grid" id="tickerGrid"></div>
+      <div id="tkArea" style="display:none" class="tk-area">
+        <div class="card-hdr"><span style="font-size:12px;font-weight:600" id="tkTitle">Tickers</span></div>
+        <div class="tk-grid" id="tkGrid"></div>
       </div>
     </div>
   </div>
 </div>
-
 <script>
-const T = (s,n) => ({s,n});
-const TAXONOMY = { sectors: [
-  { id:'tech', name:'Technology', color:'#378ADD', themes:[
-    { id:'ai', name:'Artificial Intelligence', color:'#7F77DD', subthemes:[
-      { id:'ai-infra', name:'AI Infrastructure', color:'#1D9E75', domains:[
-        { id:'dc-compute', name:'AI DC – Computing/Power', color:'#EF9F27', tickers:[T('IREN','Iris Energy'),T('CIFR','Cipher Mining'),T('APLD','Applied Digital'),T('HUT','Hut 8'),T('CORZ','Core Scientific'),T('WULF','TeraWulf')] },
-        { id:'dc-optical', name:'AI DC – Optical/Networking', color:'#EF9F27', tickers:[T('LITE','Lumentum'),T('CIEN','Ciena'),T('AAOI','Appl Opto'),T('COHR','Coherent'),T('VIAV','Viavi'),T('FFIV','F5'),T('JNPR','Juniper')] },
-        { id:'dc-memory', name:'AI DC – Memory & Storage', color:'#EF9F27', tickers:[T('MU','Micron'),T('STX','Seagate'),T('WDC','Western Digital'),T('SNDK','SanDisk'),T('NTAP','NetApp'),T('PSTG','Pure Storage')] },
-        { id:'dc-cooling', name:'AI DC – Cooling & Power', color:'#EF9F27', tickers:[T('VRT','Vertiv'),T('SMCI','SuperMicro'),T('AAON','AAON'),T('ETN','Eaton'),T('EMR','Emerson'),T('ROK','Rockwell'),T('PWR','Quanta')] },
-        { id:'dc-hyperscale', name:'Hyperscalers', color:'#EF9F27', tickers:[T('MSFT','Microsoft'),T('GOOGL','Alphabet A'),T('GOOG','Alphabet C'),T('AMZN','Amazon'),T('META','Meta')] }
+const KEY='Av0u9F1KmpP7gU5TtkMODeOkMMK5wH6D';
+const T=(s,n)=>({s,n});
+const TX={sectors:[
+  {id:'tech',name:'Technology',color:'#378ADD',themes:[
+    {id:'ai',name:'Artificial Intelligence',color:'#7F77DD',subthemes:[
+      {id:'ai-infra',name:'AI Infrastructure',color:'#1D9E75',domains:[
+        {id:'dc-compute',name:'AI DC – Computing/Power',color:'#EF9F27',tickers:[T('IREN','Iris Energy'),T('CIFR','Cipher Mining'),T('APLD','Applied Digital'),T('HUT','Hut 8'),T('CORZ','Core Scientific'),T('WULF','TeraWulf')]},
+        {id:'dc-optical',name:'AI DC – Optical/Networking',color:'#EF9F27',tickers:[T('LITE','Lumentum'),T('CIEN','Ciena'),T('AAOI','Appl Opto'),T('COHR','Coherent'),T('VIAV','Viavi'),T('FFIV','F5'),T('JNPR','Juniper')]},
+        {id:'dc-memory',name:'AI DC – Memory & Storage',color:'#EF9F27',tickers:[T('MU','Micron'),T('STX','Seagate'),T('WDC','Western Digital'),T('NTAP','NetApp'),T('PSTG','Pure Storage')]},
+        {id:'dc-cooling',name:'AI DC – Cooling & Power',color:'#EF9F27',tickers:[T('VRT','Vertiv'),T('SMCI','SuperMicro'),T('ETN','Eaton'),T('EMR','Emerson'),T('ROK','Rockwell'),T('PWR','Quanta')]},
+        {id:'dc-hyper',name:'Hyperscalers',color:'#EF9F27',tickers:[T('MSFT','Microsoft'),T('GOOGL','Alphabet'),T('AMZN','Amazon'),T('META','Meta')]}
       ]},
-      { id:'ai-silicon', name:'AI Silicon', color:'#1D9E75', domains:[
-        { id:'ai-gpu', name:'GPU / Accelerators', color:'#EF9F27', tickers:[T('NVDA','NVIDIA'),T('AMD','AMD'),T('INTC','Intel')] },
-        { id:'ai-asic', name:'Custom ASIC / Networking', color:'#EF9F27', tickers:[T('AVGO','Broadcom'),T('MRVL','Marvell'),T('QCOM','Qualcomm'),T('SWKS','Skyworks'),T('QRVO','Qorvo')] },
-        { id:'ai-edge', name:'Edge Inference', color:'#EF9F27', tickers:[T('ARM','Arm Holdings'),T('LSCC','Lattice Semi'),T('MTSI','MACOM Tech'),T('ALGM','Allegro Micro')] },
-        { id:'ai-equip', name:'Semi Equipment', color:'#EF9F27', tickers:[T('AMAT','Appl Materials'),T('LRCX','Lam Research'),T('KLAC','KLA Corp'),T('ASML','ASML'),T('ONTO','Onto Innovation'),T('ACLS','Axcelis')] }
+      {id:'ai-silicon',name:'AI Silicon',color:'#1D9E75',domains:[
+        {id:'ai-gpu',name:'GPU / Accelerators',color:'#EF9F27',tickers:[T('NVDA','NVIDIA'),T('AMD','AMD'),T('INTC','Intel')]},
+        {id:'ai-asic',name:'Custom ASIC / Networking',color:'#EF9F27',tickers:[T('AVGO','Broadcom'),T('MRVL','Marvell'),T('QCOM','Qualcomm'),T('SWKS','Skyworks'),T('QRVO','Qorvo')]},
+        {id:'ai-edge',name:'Edge Inference',color:'#EF9F27',tickers:[T('ARM','Arm Holdings'),T('LSCC','Lattice Semi'),T('MTSI','MACOM Tech')]},
+        {id:'ai-equip',name:'Semi Equipment',color:'#EF9F27',tickers:[T('AMAT','Appl Materials'),T('LRCX','Lam Research'),T('KLAC','KLA Corp'),T('ASML','ASML'),T('ONTO','Onto Innovation')]}
       ]},
-      { id:'ai-apps', name:'AI Applications', color:'#1D9E75', domains:[
-        { id:'ai-ent', name:'Enterprise AI SaaS', color:'#EF9F27', tickers:[T('CRM','Salesforce'),T('NOW','ServiceNow'),T('SNOW','Snowflake'),T('DDOG','Datadog'),T('MDB','MongoDB'),T('PLTR','Palantir'),T('AI','C3.ai')] },
-        { id:'ai-cyber', name:'AI Cybersecurity', color:'#EF9F27', tickers:[T('CRWD','CrowdStrike'),T('S','SentinelOne'),T('PANW','Palo Alto'),T('ZS','Zscaler'),T('FTNT','Fortinet'),T('CYBR','CyberArk'),T('NET','Cloudflare')] },
-        { id:'ai-dev', name:'AI Dev Tools', color:'#EF9F27', tickers:[T('GTLB','GitLab'),T('ESTC','Elastic'),T('CFLT','Confluent'),T('HUBS','HubSpot')] }
+      {id:'ai-apps',name:'AI Applications',color:'#1D9E75',domains:[
+        {id:'ai-ent',name:'Enterprise AI SaaS',color:'#EF9F27',tickers:[T('CRM','Salesforce'),T('NOW','ServiceNow'),T('SNOW','Snowflake'),T('DDOG','Datadog'),T('MDB','MongoDB'),T('PLTR','Palantir'),T('AI','C3.ai')]},
+        {id:'ai-cyber',name:'AI Cybersecurity',color:'#EF9F27',tickers:[T('CRWD','CrowdStrike'),T('S','SentinelOne'),T('PANW','Palo Alto'),T('ZS','Zscaler'),T('FTNT','Fortinet'),T('CYBR','CyberArk'),T('NET','Cloudflare')]},
+        {id:'ai-dev',name:'AI Dev Tools',color:'#EF9F27',tickers:[T('GTLB','GitLab'),T('ESTC','Elastic'),T('CFLT','Confluent'),T('HUBS','HubSpot')]}
       ]},
-      { id:'ai-robotics', name:'AI Robotics & Autonomy', color:'#1D9E75', domains:[
-        { id:'rob-auto', name:'Autonomous Vehicles', color:'#EF9F27', tickers:[T('TSLA','Tesla'),T('MBLY','Mobileye'),T('LAZR','Luminar'),T('INVZ','Innoviz')] },
-        { id:'rob-ind', name:'Industrial Automation', color:'#EF9F27', tickers:[T('ROK','Rockwell Auto'),T('TER','Teradyne'),T('BRKS','Brooks Auto')] },
-        { id:'rob-drone', name:'Drones / UAV / Space', color:'#EF9F27', tickers:[T('ACHR','Archer'),T('JOBY','Joby Aviation'),T('RKLB','Rocket Lab'),T('ASTS','AST SpaceMobile')] }
+      {id:'ai-rob',name:'AI Robotics & Autonomy',color:'#1D9E75',domains:[
+        {id:'rob-auto',name:'Autonomous Vehicles',color:'#EF9F27',tickers:[T('TSLA','Tesla'),T('MBLY','Mobileye'),T('LAZR','Luminar')]},
+        {id:'rob-ind',name:'Industrial Automation',color:'#EF9F27',tickers:[T('ROK','Rockwell'),T('TER','Teradyne'),T('BRKS','Brooks Auto')]},
+        {id:'rob-drone',name:'Drones / UAV / Space',color:'#EF9F27',tickers:[T('ACHR','Archer'),T('JOBY','Joby'),T('RKLB','Rocket Lab'),T('ASTS','AST SpaceMobile')]}
       ]}
     ]},
-    { id:'semi', name:'Semiconductors', color:'#7F77DD', subthemes:[
-      { id:'semi-logic', name:'Logic / CPU', color:'#1D9E75', domains:[
-        { id:'semi-cpu', name:'CPU / General Logic', color:'#EF9F27', tickers:[T('NVDA','NVIDIA'),T('AMD','AMD'),T('INTC','Intel'),T('QCOM','Qualcomm'),T('ARM','Arm')] },
-        { id:'semi-analog', name:'Analog & Mixed Signal', color:'#EF9F27', tickers:[T('TXN','Texas Instruments'),T('ADI','Analog Devices'),T('MCHP','Microchip'),T('ON','ON Semi'),T('NXPI','NXP Semi'),T('MPWR','Monolithic Power')] }
+    {id:'semi',name:'Semiconductors',color:'#7F77DD',subthemes:[
+      {id:'semi-logic',name:'Logic & Analog',color:'#1D9E75',domains:[
+        {id:'semi-cpu',name:'CPU / Logic',color:'#EF9F27',tickers:[T('NVDA','NVIDIA'),T('AMD','AMD'),T('INTC','Intel'),T('QCOM','Qualcomm'),T('ARM','Arm')]},
+        {id:'semi-analog',name:'Analog & Mixed Signal',color:'#EF9F27',tickers:[T('TXN','Texas Instruments'),T('ADI','Analog Devices'),T('MCHP','Microchip'),T('ON','ON Semi'),T('NXPI','NXP Semi'),T('MPWR','Monolithic Power')]}
       ]},
-      { id:'semi-mem', name:'Memory', color:'#1D9E75', domains:[
-        { id:'semi-hbm', name:'HBM / DRAM', color:'#EF9F27', tickers:[T('MU','Micron')] },
-        { id:'semi-nand', name:'NAND / Flash Storage', color:'#EF9F27', tickers:[T('WDC','Western Digital'),T('STX','Seagate'),T('PSTG','Pure Storage')] }
+      {id:'semi-mem',name:'Memory',color:'#1D9E75',domains:[
+        {id:'semi-hbm',name:'HBM / DRAM',color:'#EF9F27',tickers:[T('MU','Micron')]},
+        {id:'semi-nand',name:'NAND / Flash',color:'#EF9F27',tickers:[T('WDC','Western Digital'),T('STX','Seagate'),T('PSTG','Pure Storage')]}
       ]}
     ]},
-    { id:'cloud', name:'Cloud & SaaS', color:'#7F77DD', subthemes:[
-      { id:'cloud-hyper', name:'Hyperscale Cloud', color:'#1D9E75', domains:[
-        { id:'cloud-infra', name:'Cloud Infrastructure', color:'#EF9F27', tickers:[T('AMZN','Amazon'),T('MSFT','Microsoft'),T('GOOGL','Alphabet'),T('ORCL','Oracle'),T('IBM','IBM')] },
-        { id:'cloud-saas', name:'Horizontal SaaS', color:'#EF9F27', tickers:[T('CRM','Salesforce'),T('NOW','ServiceNow'),T('WDAY','Workday'),T('ADSK','Autodesk'),T('ANSS','ANSYS'),T('CDNS','Cadence'),T('SNPS','Synopsys')] },
-        { id:'cloud-collab', name:'Collaboration', color:'#EF9F27', tickers:[T('ZM','Zoom'),T('RNG','RingCentral'),T('TWLO','Twilio'),T('SHOP','Shopify')] }
+    {id:'cloud',name:'Cloud & SaaS',color:'#7F77DD',subthemes:[
+      {id:'cloud-h',name:'Hyperscale & SaaS',color:'#1D9E75',domains:[
+        {id:'cloud-i',name:'Cloud Infrastructure',color:'#EF9F27',tickers:[T('AMZN','Amazon'),T('MSFT','Microsoft'),T('GOOGL','Alphabet'),T('ORCL','Oracle'),T('IBM','IBM')]},
+        {id:'cloud-s',name:'Horizontal SaaS',color:'#EF9F27',tickers:[T('CRM','Salesforce'),T('NOW','ServiceNow'),T('WDAY','Workday'),T('ADSK','Autodesk'),T('CDNS','Cadence'),T('SNPS','Synopsys')]},
+        {id:'cloud-c',name:'Collaboration',color:'#EF9F27',tickers:[T('ZM','Zoom'),T('RNG','RingCentral'),T('TWLO','Twilio'),T('SHOP','Shopify')]}
       ]}
     ]},
-    { id:'internet', name:'Internet & E-Commerce', color:'#7F77DD', subthemes:[
-      { id:'inet-platform', name:'Platforms & Advertising', color:'#1D9E75', domains:[
-        { id:'inet-social', name:'Social Media', color:'#EF9F27', tickers:[T('META','Meta'),T('SNAP','Snap'),T('PINS','Pinterest'),T('RDDT','Reddit')] },
-        { id:'inet-search', name:'Search & Advertising', color:'#EF9F27', tickers:[T('GOOGL','Alphabet A'),T('GOOG','Alphabet C'),T('TTD','Trade Desk'),T('DV','DoubleVerify')] },
-        { id:'inet-ecomm', name:'E-Commerce', color:'#EF9F27', tickers:[T('AMZN','Amazon'),T('SHOP','Shopify'),T('ETSY','Etsy'),T('EBAY','eBay'),T('W','Wayfair'),T('DASH','DoorDash')] },
-        { id:'inet-stream', name:'Streaming & Gaming', color:'#EF9F27', tickers:[T('NFLX','Netflix'),T('SPOT','Spotify'),T('RBLX','Roblox'),T('EA','EA'),T('TTWO','Take-Two')] }
+    {id:'inet',name:'Internet & E-Commerce',color:'#7F77DD',subthemes:[
+      {id:'inet-p',name:'Platforms & Advertising',color:'#1D9E75',domains:[
+        {id:'inet-soc',name:'Social Media',color:'#EF9F27',tickers:[T('META','Meta'),T('SNAP','Snap'),T('PINS','Pinterest'),T('RDDT','Reddit')]},
+        {id:'inet-srch',name:'Search & Advertising',color:'#EF9F27',tickers:[T('GOOGL','Alphabet A'),T('GOOG','Alphabet C'),T('TTD','Trade Desk'),T('DV','DoubleVerify')]},
+        {id:'inet-ecom',name:'E-Commerce',color:'#EF9F27',tickers:[T('AMZN','Amazon'),T('SHOP','Shopify'),T('ETSY','Etsy'),T('EBAY','eBay'),T('W','Wayfair'),T('DASH','DoorDash')]},
+        {id:'inet-strm',name:'Streaming & Gaming',color:'#EF9F27',tickers:[T('NFLX','Netflix'),T('SPOT','Spotify'),T('RBLX','Roblox'),T('EA','EA'),T('TTWO','Take-Two')]}
       ]}
     ]}
   ]},
-  { id:'healthcare', name:'Health Care', color:'#D85A30', themes:[
-    { id:'biopharma', name:'Biopharma', color:'#7F77DD', subthemes:[
-      { id:'glp1', name:'GLP-1 / Obesity', color:'#1D9E75', domains:[
-        { id:'glp1-drug', name:'GLP-1 Drug Makers', color:'#EF9F27', tickers:[T('LLY','Eli Lilly'),T('NVO','Novo Nordisk'),T('VKTX','Viking Therapeutics')] },
-        { id:'glp1-device', name:'GLP-1 Delivery Devices', color:'#EF9F27', tickers:[T('DXCM','DexCom'),T('PODD','Insulet'),T('ISRG','Intuitive Surgical')] },
-        { id:'glp1-side', name:'GLP-1 Adjacents', color:'#EF9F27', tickers:[T('AMGN','Amgen'),T('REGN','Regeneron'),T('ENTA','Enanta')] }
+  {id:'hc',name:'Health Care',color:'#D85A30',themes:[
+    {id:'biopharma',name:'Biopharma',color:'#7F77DD',subthemes:[
+      {id:'glp1',name:'GLP-1 / Obesity',color:'#1D9E75',domains:[
+        {id:'glp1-d',name:'GLP-1 Drug Makers',color:'#EF9F27',tickers:[T('LLY','Eli Lilly'),T('NVO','Novo Nordisk'),T('VKTX','Viking Therapeutics')]},
+        {id:'glp1-dev',name:'GLP-1 Delivery Devices',color:'#EF9F27',tickers:[T('DXCM','DexCom'),T('PODD','Insulet'),T('ISRG','Intuitive Surgical')]},
+        {id:'glp1-adj',name:'GLP-1 Adjacents',color:'#EF9F27',tickers:[T('AMGN','Amgen'),T('REGN','Regeneron')]}
       ]},
-      { id:'oncology', name:'Oncology', color:'#1D9E75', domains:[
-        { id:'onco-immuno', name:'Immunotherapy / PD-1', color:'#EF9F27', tickers:[T('BMY','Bristol-Myers'),T('MRK','Merck'),T('REGN','Regeneron'),T('GILD','Gilead'),T('SNY','Sanofi')] },
-        { id:'onco-adc', name:'ADC – Antibody Drug Conj.', color:'#EF9F27', tickers:[T('ABBV','AbbVie'),T('PFE','Pfizer'),T('RCUS','Arcus Bio')] },
-        { id:'onco-cell', name:'Cell & Gene Therapy', color:'#EF9F27', tickers:[T('CRSP','CRISPR Therapeutics'),T('NTLA','Intellia'),T('BEAM','Beam Therapeutics'),T('BLUE','bluebird bio')] }
+      {id:'onco',name:'Oncology',color:'#1D9E75',domains:[
+        {id:'onco-i',name:'Immunotherapy / PD-1',color:'#EF9F27',tickers:[T('BMY','Bristol-Myers'),T('MRK','Merck'),T('REGN','Regeneron'),T('GILD','Gilead'),T('SNY','Sanofi')]},
+        {id:'onco-adc',name:'ADC – Antibody Drug Conj.',color:'#EF9F27',tickers:[T('ABBV','AbbVie'),T('PFE','Pfizer'),T('RCUS','Arcus Bio')]},
+        {id:'onco-cell',name:'Cell & Gene Therapy',color:'#EF9F27',tickers:[T('CRSP','CRISPR'),T('NTLA','Intellia'),T('BEAM','Beam Therapeutics')]}
       ]},
-      { id:'largecap-pharma', name:'Large-Cap Pharma', color:'#1D9E75', domains:[
-        { id:'pharma-us', name:'US Pharma', color:'#EF9F27', tickers:[T('JNJ','J&J'),T('PFE','Pfizer'),T('ABBV','AbbVie'),T('LLY','Eli Lilly'),T('MRK','Merck'),T('AMGN','Amgen'),T('BIIB','Biogen'),T('VRTX','Vertex'),T('GILD','Gilead')] },
-        { id:'pharma-eu', name:'EU Pharma ADR', color:'#EF9F27', tickers:[T('NVO','Novo Nordisk'),T('SNY','Sanofi'),T('AZN','AstraZeneca'),T('GSK','GSK')] }
+      {id:'pharma',name:'Large-Cap Pharma',color:'#1D9E75',domains:[
+        {id:'pharma-us',name:'US Pharma',color:'#EF9F27',tickers:[T('JNJ','J&J'),T('PFE','Pfizer'),T('ABBV','AbbVie'),T('LLY','Eli Lilly'),T('MRK','Merck'),T('AMGN','Amgen'),T('BIIB','Biogen'),T('VRTX','Vertex'),T('GILD','Gilead')]},
+        {id:'pharma-eu',name:'EU Pharma ADR',color:'#EF9F27',tickers:[T('NVO','Novo Nordisk'),T('SNY','Sanofi'),T('AZN','AstraZeneca'),T('GSK','GSK')]}
       ]}
     ]},
-    { id:'medtech', name:'MedTech & Devices', color:'#7F77DD', subthemes:[
-      { id:'medtech-diag', name:'Diagnostics & Imaging', color:'#1D9E75', domains:[
-        { id:'diag-lab', name:'Lab Diagnostics', color:'#EF9F27', tickers:[T('DHR','Danaher'),T('TMO','Thermo Fisher'),T('A','Agilent'),T('WAT','Waters Corp'),T('BIO','Bio-Rad'),T('IDXX','IDEXX')] },
-        { id:'diag-img', name:'Medical Imaging / Devices', color:'#EF9F27', tickers:[T('GEHC','GE HealthCare'),T('SYK','Stryker'),T('BSX','Boston Sci'),T('EW','Edwards Life'),T('ISRG','Intuitive Surg'),T('MASI','Masimo')] }
+    {id:'medtech',name:'MedTech & Devices',color:'#7F77DD',subthemes:[
+      {id:'diag',name:'Diagnostics & Devices',color:'#1D9E75',domains:[
+        {id:'diag-lab',name:'Lab Diagnostics',color:'#EF9F27',tickers:[T('DHR','Danaher'),T('TMO','Thermo Fisher'),T('A','Agilent'),T('WAT','Waters'),T('IDXX','IDEXX')]},
+        {id:'diag-img',name:'Medical Imaging / Devices',color:'#EF9F27',tickers:[T('GEHC','GE HealthCare'),T('SYK','Stryker'),T('BSX','Boston Sci'),T('EW','Edwards Life'),T('ISRG','Intuitive Surg')]}
       ]}
     ]},
-    { id:'healthit', name:'Managed Care', color:'#7F77DD', subthemes:[
-      { id:'hit-ins', name:'Managed Care / Insurance', color:'#1D9E75', domains:[
-        { id:'hit-mcare', name:'Managed Care', color:'#EF9F27', tickers:[T('UNH','UnitedHealth'),T('CVS','CVS'),T('CI','Cigna'),T('HUM','Humana'),T('CNC','Centene'),T('ELV','Elevance'),T('MOH','Molina')] }
+    {id:'mcare',name:'Managed Care',color:'#7F77DD',subthemes:[
+      {id:'mcare-i',name:'Managed Care / Insurance',color:'#1D9E75',domains:[
+        {id:'mcare-c',name:'Managed Care',color:'#EF9F27',tickers:[T('UNH','UnitedHealth'),T('CVS','CVS'),T('CI','Cigna'),T('HUM','Humana'),T('CNC','Centene'),T('ELV','Elevance'),T('MOH','Molina')]}
       ]}
     ]}
   ]},
-  { id:'energy', name:'Energy', color:'#639922', themes:[
-    { id:'clean-energy', name:'Clean / New Energy', color:'#7F77DD', subthemes:[
-      { id:'nuclear', name:'Nuclear', color:'#1D9E75', domains:[
-        { id:'nuc-util', name:'Nuclear Utilities', color:'#EF9F27', tickers:[T('CEG','Constellation'),T('VST','Vistra'),T('NRG','NRG Energy'),T('EXC','Exelon'),T('AEE','Ameren')] },
-        { id:'nuc-smr', name:'Small Modular Reactors', color:'#EF9F27', tickers:[T('NNE','Nano Nuclear'),T('SMR','NuScale'),T('OKLO','Oklo'),T('BWXT','BWX Tech')] },
-        { id:'nuc-uranium', name:'Uranium Miners', color:'#EF9F27', tickers:[T('CCJ','Cameco'),T('UEC','Uranium Energy'),T('DNN','Denison Mines'),T('UUUU','Energy Fuels')] }
+  {id:'energy',name:'Energy',color:'#639922',themes:[
+    {id:'clean',name:'Clean / New Energy',color:'#7F77DD',subthemes:[
+      {id:'nuc',name:'Nuclear',color:'#1D9E75',domains:[
+        {id:'nuc-u',name:'Nuclear Utilities',color:'#EF9F27',tickers:[T('CEG','Constellation'),T('VST','Vistra'),T('NRG','NRG Energy'),T('EXC','Exelon'),T('AEE','Ameren')]},
+        {id:'nuc-smr',name:'Small Modular Reactors',color:'#EF9F27',tickers:[T('NNE','Nano Nuclear'),T('SMR','NuScale'),T('OKLO','Oklo'),T('BWXT','BWX Tech')]},
+        {id:'nuc-ur',name:'Uranium Miners',color:'#EF9F27',tickers:[T('CCJ','Cameco'),T('UEC','Uranium Energy'),T('DNN','Denison'),T('UUUU','Energy Fuels')]}
       ]},
-      { id:'solar-w', name:'Solar & Wind', color:'#1D9E75', domains:[
-        { id:'solar-util', name:'Solar Utilities', color:'#EF9F27', tickers:[T('NEE','NextEra'),T('AES','AES Corp'),T('FSLR','First Solar'),T('BEP','Brookfield Renew')] },
-        { id:'solar-tech', name:'Solar Tech / Inverters', color:'#EF9F27', tickers:[T('ENPH','Enphase'),T('SEDG','SolarEdge'),T('ARRY','Array Tech'),T('NOVA','Sunnova'),T('RUN','Sunrun')] }
+      {id:'solar',name:'Solar & Wind',color:'#1D9E75',domains:[
+        {id:'solar-u',name:'Solar Utilities',color:'#EF9F27',tickers:[T('NEE','NextEra'),T('AES','AES Corp'),T('FSLR','First Solar')]},
+        {id:'solar-t',name:'Solar Tech / Inverters',color:'#EF9F27',tickers:[T('ENPH','Enphase'),T('SEDG','SolarEdge'),T('ARRY','Array Tech'),T('RUN','Sunrun')]}
       ]},
-      { id:'energy-stor', name:'Energy Storage & Grid', color:'#1D9E75', domains:[
-        { id:'batt-stor', name:'Grid-Scale Batteries', color:'#EF9F27', tickers:[T('FLNC','Fluence'),T('BE','Bloom Energy'),T('STEM','Stem')] },
-        { id:'grid-infra', name:'Grid Infrastructure', color:'#EF9F27', tickers:[T('PWR','Quanta Services'),T('MYR','MYR Group'),T('EME','EMCOR'),T('ETN','Eaton')] }
+      {id:'stor',name:'Energy Storage & Grid',color:'#1D9E75',domains:[
+        {id:'stor-b',name:'Grid Batteries',color:'#EF9F27',tickers:[T('FLNC','Fluence'),T('BE','Bloom Energy')]},
+        {id:'stor-g',name:'Grid Infrastructure',color:'#EF9F27',tickers:[T('PWR','Quanta'),T('EME','EMCOR'),T('ETN','Eaton')]}
       ]}
     ]},
-    { id:'fossil', name:'Oil & Gas', color:'#7F77DD', subthemes:[
-      { id:'og-upstream', name:'Upstream E&P', color:'#1D9E75', domains:[
-        { id:'og-major', name:'Integrated Majors', color:'#EF9F27', tickers:[T('XOM','ExxonMobil'),T('CVX','Chevron'),T('COP','ConocoPhillips'),T('OXY','Occidental'),T('SLB','SLB'),T('HAL','Halliburton'),T('BKR','Baker Hughes')] },
-        { id:'og-indie', name:'Independent E&P', color:'#EF9F27', tickers:[T('DVN','Devon Energy'),T('FANG','Diamondback'),T('MRO','Marathon Oil'),T('APA','APA Corp'),T('MTDR','Matador'),T('PXD','Pioneer Natural')] }
+    {id:'fossil',name:'Oil & Gas',color:'#7F77DD',subthemes:[
+      {id:'og-up',name:'Upstream E&P',color:'#1D9E75',domains:[
+        {id:'og-maj',name:'Integrated Majors',color:'#EF9F27',tickers:[T('XOM','ExxonMobil'),T('CVX','Chevron'),T('COP','ConocoPhillips'),T('OXY','Occidental'),T('SLB','SLB'),T('HAL','Halliburton'),T('BKR','Baker Hughes')]},
+        {id:'og-ind',name:'Independent E&P',color:'#EF9F27',tickers:[T('DVN','Devon Energy'),T('FANG','Diamondback'),T('MRO','Marathon Oil'),T('APA','APA Corp'),T('MTDR','Matador')]}
       ]},
-      { id:'og-mid', name:'Midstream & Refining', color:'#1D9E75', domains:[
-        { id:'og-pipe', name:'Pipelines / MLP', color:'#EF9F27', tickers:[T('KMI','Kinder Morgan'),T('WMB','Williams Co'),T('OKE','ONEOK'),T('ET','Energy Transfer'),T('EPD','Enterprise Prod')] },
-        { id:'og-refine', name:'Refining', color:'#EF9F27', tickers:[T('PSX','Phillips 66'),T('VLO','Valero'),T('MPC','Marathon Pete'),T('DK','Delek Group')] }
+      {id:'og-mid',name:'Midstream & Refining',color:'#1D9E75',domains:[
+        {id:'og-pipe',name:'Pipelines / MLP',color:'#EF9F27',tickers:[T('KMI','Kinder Morgan'),T('WMB','Williams Co'),T('OKE','ONEOK'),T('ET','Energy Transfer'),T('EPD','Enterprise Prod')]},
+        {id:'og-ref',name:'Refining',color:'#EF9F27',tickers:[T('PSX','Phillips 66'),T('VLO','Valero'),T('MPC','Marathon Pete')]}
       ]}
     ]}
   ]},
-  { id:'finance', name:'Financials', color:'#D4537E', themes:[
-    { id:'fintech', name:'Fintech', color:'#7F77DD', subthemes:[
-      { id:'payments', name:'Payments', color:'#1D9E75', domains:[
-        { id:'pay-networks', name:'Payment Networks', color:'#EF9F27', tickers:[T('V','Visa'),T('MA','Mastercard'),T('AXP','Amex')] },
-        { id:'pay-proc', name:'Payment Processing', color:'#EF9F27', tickers:[T('FIS','FIS'),T('FISV','Fiserv'),T('GPN','Global Payments'),T('WEX','WEX'),T('FLT','Fleetcor')] },
-        { id:'pay-bnpl', name:'BNPL / Alt Lending', color:'#EF9F27', tickers:[T('AFRM','Affirm'),T('SOFI','SoFi'),T('UPST','Upstart'),T('PYPL','PayPal'),T('SQ','Block')] }
+  {id:'fin',name:'Financials',color:'#D4537E',themes:[
+    {id:'fintech',name:'Fintech',color:'#7F77DD',subthemes:[
+      {id:'pay',name:'Payments',color:'#1D9E75',domains:[
+        {id:'pay-net',name:'Payment Networks',color:'#EF9F27',tickers:[T('V','Visa'),T('MA','Mastercard'),T('AXP','Amex')]},
+        {id:'pay-proc',name:'Payment Processing',color:'#EF9F27',tickers:[T('FIS','FIS'),T('FISV','Fiserv'),T('GPN','Global Payments'),T('WEX','WEX'),T('FLT','Fleetcor')]},
+        {id:'pay-bnpl',name:'BNPL / Alt Lending',color:'#EF9F27',tickers:[T('AFRM','Affirm'),T('SOFI','SoFi'),T('UPST','Upstart'),T('PYPL','PayPal'),T('SQ','Block')]}
       ]}
     ]},
-    { id:'banks', name:'Banks & Capital Markets', color:'#7F77DD', subthemes:[
-      { id:'banks-major', name:'Money Center Banks', color:'#1D9E75', domains:[
-        { id:'bank-big', name:'Mega-Cap Banks', color:'#EF9F27', tickers:[T('JPM','JPMorgan'),T('BAC','Bank of America'),T('WFC','Wells Fargo'),T('C','Citigroup'),T('USB','US Bancorp'),T('TFC','Truist')] },
-        { id:'bank-inv', name:'Investment Banking', color:'#EF9F27', tickers:[T('GS','Goldman Sachs'),T('MS','Morgan Stanley'),T('RJF','Raymond James'),T('EVR','Evercore')] }
+    {id:'banks',name:'Banks & Capital Markets',color:'#7F77DD',subthemes:[
+      {id:'bank-mc',name:'Money Center Banks',color:'#1D9E75',domains:[
+        {id:'bank-big',name:'Mega-Cap Banks',color:'#EF9F27',tickers:[T('JPM','JPMorgan'),T('BAC','Bank of America'),T('WFC','Wells Fargo'),T('C','Citigroup'),T('USB','US Bancorp'),T('TFC','Truist')]},
+        {id:'bank-inv',name:'Investment Banking',color:'#EF9F27',tickers:[T('GS','Goldman Sachs'),T('MS','Morgan Stanley'),T('RJF','Raymond James'),T('EVR','Evercore')]}
       ]},
-      { id:'banks-capital', name:'Capital Markets', color:'#1D9E75', domains:[
-        { id:'cap-exc', name:'Exchanges', color:'#EF9F27', tickers:[T('CME','CME Group'),T('ICE','Intercontinental'),T('NDAQ','Nasdaq'),T('CBOE','Cboe Global')] },
-        { id:'cap-mgmt', name:'Asset Management', color:'#EF9F27', tickers:[T('BLK','BlackRock'),T('BX','Blackstone'),T('KKR','KKR'),T('APO','Apollo'),T('ARES','Ares'),T('CG','Carlyle'),T('BAM','Brookfield')] }
+      {id:'cap-mkt',name:'Capital Markets',color:'#1D9E75',domains:[
+        {id:'cap-exc',name:'Exchanges',color:'#EF9F27',tickers:[T('CME','CME Group'),T('ICE','Intercontinental'),T('NDAQ','Nasdaq'),T('CBOE','Cboe')]},
+        {id:'cap-mgmt',name:'Asset Management',color:'#EF9F27',tickers:[T('BLK','BlackRock'),T('BX','Blackstone'),T('KKR','KKR'),T('APO','Apollo'),T('ARES','Ares'),T('CG','Carlyle')]}
       ]}
     ]},
-    { id:'insurance', name:'Insurance', color:'#7F77DD', subthemes:[
-      { id:'ins-prop', name:'P&C Insurance', color:'#1D9E75', domains:[
-        { id:'ins-pc', name:'Property & Casualty', color:'#EF9F27', tickers:[T('PGR','Progressive'),T('TRV','Travelers'),T('CB','Chubb'),T('ALL','Allstate'),T('AIG','AIG'),T('HIG','Hartford')] },
-        { id:'ins-life', name:'Life & Specialty', color:'#EF9F27', tickers:[T('MET','MetLife'),T('PRU','Prudential'),T('AFL','Aflac'),T('UNM','Unum')] }
+    {id:'ins',name:'Insurance',color:'#7F77DD',subthemes:[
+      {id:'ins-pc',name:'P&C & Life Insurance',color:'#1D9E75',domains:[
+        {id:'ins-p',name:'Property & Casualty',color:'#EF9F27',tickers:[T('PGR','Progressive'),T('TRV','Travelers'),T('CB','Chubb'),T('ALL','Allstate'),T('AIG','AIG'),T('HIG','Hartford')]},
+        {id:'ins-l',name:'Life & Specialty',color:'#EF9F27',tickers:[T('MET','MetLife'),T('PRU','Prudential'),T('AFL','Aflac'),T('UNM','Unum')]}
       ]}
     ]}
   ]},
-  { id:'consumer', name:'Consumer', color:'#EF9F27', themes:[
-    { id:'cons-disc', name:'Consumer Discretionary', color:'#7F77DD', subthemes:[
-      { id:'retail', name:'Retail', color:'#1D9E75', domains:[
-        { id:'retail-broad', name:'Broadline Retail', color:'#EF9F27', tickers:[T('AMZN','Amazon'),T('TGT','Target'),T('WMT','Walmart'),T('COST','Costco'),T('DG','Dollar General'),T('DLTR','Dollar Tree'),T('KR','Kroger')] },
-        { id:'retail-apparel', name:'Apparel & Footwear', color:'#EF9F27', tickers:[T('NKE','Nike'),T('LULU','Lululemon'),T('PVH','PVH Corp'),T('RL','Ralph Lauren'),T('TPR','Tapestry')] },
-        { id:'retail-home', name:'Home Improvement', color:'#EF9F27', tickers:[T('HD','Home Depot'),T('LOW','Lowes'),T('WSM','Williams-Sonoma'),T('RH','RH')] },
-        { id:'retail-luxury', name:'Luxury & Beauty', color:'#EF9F27', tickers:[T('EL','Estee Lauder'),T('ULTA','Ulta Beauty'),T('CPRI','Capri Holdings'),T('ELFS','Elf Beauty')] }
+  {id:'cons',name:'Consumer',color:'#EF9F27',themes:[
+    {id:'disc',name:'Consumer Discretionary',color:'#7F77DD',subthemes:[
+      {id:'retail',name:'Retail',color:'#1D9E75',domains:[
+        {id:'ret-broad',name:'Broadline Retail',color:'#EF9F27',tickers:[T('AMZN','Amazon'),T('TGT','Target'),T('WMT','Walmart'),T('COST','Costco'),T('DG','Dollar General'),T('DLTR','Dollar Tree'),T('KR','Kroger')]},
+        {id:'ret-app',name:'Apparel & Footwear',color:'#EF9F27',tickers:[T('NKE','Nike'),T('LULU','Lululemon'),T('PVH','PVH Corp'),T('RL','Ralph Lauren'),T('TPR','Tapestry')]},
+        {id:'ret-home',name:'Home Improvement',color:'#EF9F27',tickers:[T('HD','Home Depot'),T('LOW','Lowes'),T('WSM','Williams-Sonoma'),T('RH','RH')]},
+        {id:'ret-lux',name:'Luxury & Beauty',color:'#EF9F27',tickers:[T('EL','Estee Lauder'),T('ULTA','Ulta Beauty'),T('CPRI','Capri Holdings'),T('ELFS','Elf Beauty')]}
       ]},
-      { id:'auto-transport', name:'Auto & Travel', color:'#1D9E75', domains:[
-        { id:'auto-oem', name:'Auto OEM / EV', color:'#EF9F27', tickers:[T('TSLA','Tesla'),T('F','Ford'),T('GM','General Motors'),T('RIVN','Rivian'),T('LCID','Lucid')] },
-        { id:'travel', name:'Travel & Leisure', color:'#EF9F27', tickers:[T('BKNG','Booking'),T('EXPE','Expedia'),T('ABNB','Airbnb'),T('MAR','Marriott'),T('HLT','Hilton'),T('UAL','United Airlines'),T('DAL','Delta'),T('LUV','Southwest'),T('AAL','American Airlines'),T('RCL','Royal Caribbean'),T('CCL','Carnival')] },
-        { id:'gaming-casino', name:'Gaming & Casinos', color:'#EF9F27', tickers:[T('LVS','Las Vegas Sands'),T('WYNN','Wynn'),T('MGM','MGM'),T('VICI','VICI'),T('DKNG','DraftKings')] }
+      {id:'auto-trv',name:'Auto & Travel',color:'#1D9E75',domains:[
+        {id:'auto',name:'Auto OEM / EV',color:'#EF9F27',tickers:[T('TSLA','Tesla'),T('F','Ford'),T('GM','General Motors'),T('RIVN','Rivian'),T('LCID','Lucid')]},
+        {id:'travel',name:'Travel & Leisure',color:'#EF9F27',tickers:[T('BKNG','Booking'),T('EXPE','Expedia'),T('ABNB','Airbnb'),T('MAR','Marriott'),T('HLT','Hilton'),T('UAL','United'),T('DAL','Delta'),T('RCL','Royal Caribbean'),T('CCL','Carnival')]},
+        {id:'casino',name:'Gaming & Casinos',color:'#EF9F27',tickers:[T('LVS','Las Vegas Sands'),T('WYNN','Wynn'),T('MGM','MGM'),T('VICI','VICI'),T('DKNG','DraftKings')]}
       ]}
     ]},
-    { id:'cons-staples', name:'Consumer Staples', color:'#7F77DD', subthemes:[
-      { id:'food-bev', name:'Food & Beverages', color:'#1D9E75', domains:[
-        { id:'bev-soft', name:'Beverages – Soft Drinks', color:'#EF9F27', tickers:[T('KO','Coca-Cola'),T('PEP','PepsiCo'),T('MNST','Monster'),T('FIZZ','National Bev')] },
-        { id:'bev-alc', name:'Beverages – Alcohol', color:'#EF9F27', tickers:[T('BUD','AB InBev'),T('STZ','Constellation'),T('SAM','Boston Beer'),T('TAP','Molson Coors')] },
-        { id:'food-pkg', name:'Packaged Foods', color:'#EF9F27', tickers:[T('GIS','General Mills'),T('K','Kellogg'),T('CPB','Campbell'),T('HRL','Hormel'),T('MKC','McCormick'),T('CAG','Conagra')] },
-        { id:'food-rest', name:'Restaurants', color:'#EF9F27', tickers:[T('MCD','McDonald\'s'),T('SBUX','Starbucks'),T('YUM','Yum Brands'),T('QSR','Restaurant Brands'),T('CMG','Chipotle'),T('DPZ','Domino\'s'),T('SHAK','Shake Shack')] }
+    {id:'stap',name:'Consumer Staples',color:'#7F77DD',subthemes:[
+      {id:'food',name:'Food & Beverages',color:'#1D9E75',domains:[
+        {id:'bev-soft',name:'Soft Drinks',color:'#EF9F27',tickers:[T('KO','Coca-Cola'),T('PEP','PepsiCo'),T('MNST','Monster'),T('FIZZ','National Bev')]},
+        {id:'bev-alc',name:'Alcohol',color:'#EF9F27',tickers:[T('BUD','AB InBev'),T('STZ','Constellation'),T('SAM','Boston Beer'),T('TAP','Molson Coors')]},
+        {id:'food-pkg',name:'Packaged Foods',color:'#EF9F27',tickers:[T('GIS','General Mills'),T('K','Kellogg'),T('CPB','Campbell'),T('HRL','Hormel'),T('MKC','McCormick'),T('CAG','Conagra')]},
+        {id:'food-rst',name:'Restaurants',color:'#EF9F27',tickers:[T('MCD','McDonalds'),T('SBUX','Starbucks'),T('YUM','Yum Brands'),T('QSR','Restaurant Brands'),T('CMG','Chipotle'),T('DPZ','Dominos'),T('SHAK','Shake Shack')]}
       ]},
-      { id:'household', name:'Household & Personal Care', color:'#1D9E75', domains:[
-        { id:'house-prod', name:'Household Products', color:'#EF9F27', tickers:[T('PG','Procter & Gamble'),T('CL','Colgate'),T('CHD','Church & Dwight'),T('CLX','Clorox'),T('KMB','Kimberly-Clark')] },
-        { id:'tobacco', name:'Tobacco', color:'#EF9F27', tickers:[T('MO','Altria'),T('PM','Philip Morris'),T('BTI','BAT ADR')] }
+      {id:'hhold',name:'Household & Personal Care',color:'#1D9E75',domains:[
+        {id:'hh-prod',name:'Household Products',color:'#EF9F27',tickers:[T('PG','Procter & Gamble'),T('CL','Colgate'),T('CHD','Church & Dwight'),T('CLX','Clorox'),T('KMB','Kimberly-Clark')]},
+        {id:'tobacco',name:'Tobacco',color:'#EF9F27',tickers:[T('MO','Altria'),T('PM','Philip Morris'),T('BTI','BAT ADR')]}
       ]}
     ]}
   ]},
-  { id:'industrials', name:'Industrials', color:'#888780', themes:[
-    { id:'defense', name:'Defense & Aerospace', color:'#7F77DD', subthemes:[
-      { id:'def-prime', name:'Defense Primes', color:'#1D9E75', domains:[
-        { id:'def-big', name:'Defense Contractors', color:'#EF9F27', tickers:[T('LMT','Lockheed Martin'),T('RTX','RTX'),T('NOC','Northrop'),T('GD','General Dynamics'),T('BA','Boeing'),T('HII','Huntington'),T('LHX','L3Harris')] },
-        { id:'def-cyber', name:'Defense IT / Cyber', color:'#EF9F27', tickers:[T('LDOS','Leidos'),T('BAH','Booz Allen'),T('SAIC','SAIC'),T('CACI','CACI'),T('PSN','Parsons')] },
-        { id:'def-drone', name:'Defense Drones / UAS', color:'#EF9F27', tickers:[T('AXON','Axon'),T('KTOS','Kratos'),T('AVAV','AeroVironment')] }
+  {id:'ind',name:'Industrials',color:'#888780',themes:[
+    {id:'def',name:'Defense & Aerospace',color:'#7F77DD',subthemes:[
+      {id:'def-p',name:'Defense Primes',color:'#1D9E75',domains:[
+        {id:'def-big',name:'Defense Contractors',color:'#EF9F27',tickers:[T('LMT','Lockheed Martin'),T('RTX','RTX'),T('NOC','Northrop'),T('GD','General Dynamics'),T('BA','Boeing'),T('HII','Huntington'),T('LHX','L3Harris')]},
+        {id:'def-cy',name:'Defense IT / Cyber',color:'#EF9F27',tickers:[T('LDOS','Leidos'),T('BAH','Booz Allen'),T('SAIC','SAIC'),T('CACI','CACI'),T('PSN','Parsons')]},
+        {id:'def-dr',name:'Defense Drones / UAS',color:'#EF9F27',tickers:[T('AXON','Axon'),T('KTOS','Kratos'),T('AVAV','AeroVironment')]}
       ]}
     ]},
-    { id:'ind-machinery', name:'Industrial Machinery', color:'#7F77DD', subthemes:[
-      { id:'mach-heavy', name:'Heavy Equipment', color:'#1D9E75', domains:[
-        { id:'mach-const', name:'Construction & Mining', color:'#EF9F27', tickers:[T('CAT','Caterpillar'),T('DE','Deere'),T('TEX','Terex'),T('AGCO','AGCO')] },
-        { id:'mach-cong', name:'Industrial Conglomerates', color:'#EF9F27', tickers:[T('HON','Honeywell'),T('MMM','3M'),T('GE','GE Aerospace'),T('ITW','Illinois Tool'),T('EMR','Emerson'),T('PH','Parker Hannifin'),T('DOV','Dover'),T('AME','Ametek'),T('ROP','Roper Tech')] }
+    {id:'mach',name:'Industrial Machinery',color:'#7F77DD',subthemes:[
+      {id:'mach-h',name:'Heavy Equipment',color:'#1D9E75',domains:[
+        {id:'mach-c',name:'Construction & Mining',color:'#EF9F27',tickers:[T('CAT','Caterpillar'),T('DE','Deere'),T('TEX','Terex'),T('AGCO','AGCO')]},
+        {id:'mach-cg',name:'Industrial Conglomerates',color:'#EF9F27',tickers:[T('HON','Honeywell'),T('MMM','3M'),T('GE','GE Aerospace'),T('ITW','Illinois Tool'),T('EMR','Emerson'),T('PH','Parker Hannifin'),T('DOV','Dover'),T('AME','Ametek'),T('ROP','Roper Tech')]}
       ]}
     ]},
-    { id:'transport', name:'Transportation & Logistics', color:'#7F77DD', subthemes:[
-      { id:'trans-freight', name:'Freight & Rail', color:'#1D9E75', domains:[
-        { id:'trans-rail', name:'Railroads', color:'#EF9F27', tickers:[T('UNP','Union Pacific'),T('CSX','CSX'),T('NSC','Norfolk Southern'),T('CP','Canadian Pacific'),T('CNI','Canadian National')] },
-        { id:'trans-log', name:'Freight / Logistics', color:'#EF9F27', tickers:[T('UPS','UPS'),T('FDX','FedEx'),T('XPO','XPO'),T('CHRW','CH Robinson'),T('ODFL','Old Dominion'),T('JBHT','JB Hunt')] }
+    {id:'trans',name:'Transportation & Logistics',color:'#7F77DD',subthemes:[
+      {id:'trans-f',name:'Freight & Rail',color:'#1D9E75',domains:[
+        {id:'rail',name:'Railroads',color:'#EF9F27',tickers:[T('UNP','Union Pacific'),T('CSX','CSX'),T('NSC','Norfolk Southern'),T('CP','Canadian Pacific'),T('CNI','Canadian National')]},
+        {id:'log',name:'Freight / Logistics',color:'#EF9F27',tickers:[T('UPS','UPS'),T('FDX','FedEx'),T('XPO','XPO'),T('CHRW','CH Robinson'),T('ODFL','Old Dominion'),T('JBHT','JB Hunt')]}
       ]}
     ]}
   ]},
-  { id:'realestate', name:'Real Estate', color:'#5DCAA5', themes:[
-    { id:'reit', name:'REITs', color:'#7F77DD', subthemes:[
-      { id:'reit-dc', name:'Data Center REITs', color:'#1D9E75', domains:[
-        { id:'reit-dc-core', name:'Data Center REITs', color:'#EF9F27', tickers:[T('EQIX','Equinix'),T('DLR','Digital Realty'),T('IRM','Iron Mountain')] }
+  {id:'re',name:'Real Estate',color:'#5DCAA5',themes:[
+    {id:'reit',name:'REITs',color:'#7F77DD',subthemes:[
+      {id:'reit-dc',name:'Data Center REITs',color:'#1D9E75',domains:[
+        {id:'reit-dcc',name:'Data Center REITs',color:'#EF9F27',tickers:[T('EQIX','Equinix'),T('DLR','Digital Realty'),T('IRM','Iron Mountain')]}
       ]},
-      { id:'reit-res', name:'Residential REITs', color:'#1D9E75', domains:[
-        { id:'reit-apt', name:'Apartments', color:'#EF9F27', tickers:[T('EQR','Equity Residential'),T('AVB','AvalonBay'),T('ESS','Essex Property'),T('MAA','Mid-America Apt')] },
-        { id:'reit-sfr', name:'Single-Family Rental', color:'#EF9F27', tickers:[T('INVH','Invitation Homes'),T('AMH','American Homes 4 Rent')] }
+      {id:'reit-res',name:'Residential REITs',color:'#1D9E75',domains:[
+        {id:'reit-apt',name:'Apartments',color:'#EF9F27',tickers:[T('EQR','Equity Residential'),T('AVB','AvalonBay'),T('ESS','Essex Property'),T('MAA','Mid-America Apt')]},
+        {id:'reit-sfr',name:'Single-Family Rental',color:'#EF9F27',tickers:[T('INVH','Invitation Homes'),T('AMH','American Homes 4 Rent')]}
       ]},
-      { id:'reit-comm', name:'Commercial REITs', color:'#1D9E75', domains:[
-        { id:'reit-office', name:'Office', color:'#EF9F27', tickers:[T('BXP','BXP'),T('VNO','Vornado'),T('SLG','SL Green'),T('ARE','Alexandria RE')] },
-        { id:'reit-retail', name:'Retail / Mall', color:'#EF9F27', tickers:[T('SPG','Simon Property'),T('O','Realty Income'),T('NNN','NNN REIT'),T('KIM','Kimco')] },
-        { id:'reit-indust', name:'Industrial / Logistics', color:'#EF9F27', tickers:[T('PLD','Prologis'),T('STAG','STAG Ind'),T('EGP','EastGroup Prop')] }
+      {id:'reit-com',name:'Commercial REITs',color:'#1D9E75',domains:[
+        {id:'reit-off',name:'Office',color:'#EF9F27',tickers:[T('BXP','BXP'),T('VNO','Vornado'),T('SLG','SL Green'),T('ARE','Alexandria RE')]},
+        {id:'reit-ret',name:'Retail / Mall',color:'#EF9F27',tickers:[T('SPG','Simon Property'),T('O','Realty Income'),T('NNN','NNN REIT'),T('KIM','Kimco')]},
+        {id:'reit-ind',name:'Industrial / Logistics',color:'#EF9F27',tickers:[T('PLD','Prologis'),T('STAG','STAG Ind'),T('EGP','EastGroup')]}
       ]}
     ]}
   ]},
-  { id:'materials', name:'Materials', color:'#97C459', themes:[
-    { id:'metals', name:'Metals & Mining', color:'#7F77DD', subthemes:[
-      { id:'precious', name:'Precious Metals', color:'#1D9E75', domains:[
-        { id:'gold', name:'Gold Miners', color:'#EF9F27', tickers:[T('NEM','Newmont'),T('GOLD','Barrick'),T('AEM','Agnico Eagle'),T('WPM','Wheaton Precious'),T('KGC','Kinross')] },
-        { id:'silver', name:'Silver Miners', color:'#EF9F27', tickers:[T('PAAS','Pan American Silver'),T('AG','First Majestic')] }
+  {id:'mat',name:'Materials',color:'#97C459',themes:[
+    {id:'metals',name:'Metals & Mining',color:'#7F77DD',subthemes:[
+      {id:'prec',name:'Precious Metals',color:'#1D9E75',domains:[
+        {id:'gold',name:'Gold Miners',color:'#EF9F27',tickers:[T('NEM','Newmont'),T('GOLD','Barrick'),T('AEM','Agnico Eagle'),T('WPM','Wheaton Precious'),T('KGC','Kinross')]},
+        {id:'silver',name:'Silver Miners',color:'#EF9F27',tickers:[T('PAAS','Pan American Silver'),T('AG','First Majestic')]}
       ]},
-      { id:'copper', name:'Copper & Critical Minerals', color:'#1D9E75', domains:[
-        { id:'copper-miner', name:'Copper Miners', color:'#EF9F27', tickers:[T('FCX','Freeport-McMoRan'),T('SCCO','Southern Copper'),T('TECK','Teck Resources')] },
-        { id:'copper-crit', name:'Lithium & Critical Minerals', color:'#EF9F27', tickers:[T('ALB','Albemarle'),T('SQM','SQM'),T('LAC','Lithium Americas'),T('MP','MP Materials')] }
+      {id:'copper',name:'Copper & Critical Minerals',color:'#1D9E75',domains:[
+        {id:'copper-m',name:'Copper Miners',color:'#EF9F27',tickers:[T('FCX','Freeport-McMoRan'),T('SCCO','Southern Copper'),T('TECK','Teck Resources')]},
+        {id:'copper-c',name:'Lithium & Critical Minerals',color:'#EF9F27',tickers:[T('ALB','Albemarle'),T('SQM','SQM'),T('LAC','Lithium Americas'),T('MP','MP Materials')]}
       ]}
     ]},
-    { id:'chemicals', name:'Chemicals', color:'#7F77DD', subthemes:[
-      { id:'chem-spec', name:'Specialty Chemicals', color:'#1D9E75', domains:[
-        { id:'chem-core', name:'Specialty Chem', color:'#EF9F27', tickers:[T('SHW','Sherwin-Williams'),T('APD','Air Products'),T('LIN','Linde'),T('ECL','Ecolab'),T('PPG','PPG Ind'),T('IFF','Int Flavors')] }
+    {id:'chem',name:'Chemicals',color:'#7F77DD',subthemes:[
+      {id:'chem-s',name:'Specialty Chemicals',color:'#1D9E75',domains:[
+        {id:'chem-c',name:'Specialty Chem',color:'#EF9F27',tickers:[T('SHW','Sherwin-Williams'),T('APD','Air Products'),T('LIN','Linde'),T('ECL','Ecolab'),T('PPG','PPG Ind'),T('IFF','Int Flavors')]}
       ]}
     ]}
   ]},
-  { id:'utilities', name:'Utilities', color:'#AFA9EC', themes:[
-    { id:'util-elec', name:'Electric Utilities', color:'#7F77DD', subthemes:[
-      { id:'util-reg', name:'Regulated Electric', color:'#1D9E75', domains:[
-        { id:'util-reg-core', name:'Regulated Utilities', color:'#EF9F27', tickers:[T('NEE','NextEra'),T('DUK','Duke Energy'),T('SO','Southern Co'),T('D','Dominion'),T('AEP','AEP'),T('EXC','Exelon'),T('XEL','Xcel Energy'),T('ED','Consolidated Ed'),T('ETR','Entergy'),T('PEG','PSEG'),T('PCG','PG&E'),T('EIX','Edison Int'),T('WEC','WEC Energy'),T('ES','Eversource'),T('CMS','CMS Energy')] }
+  {id:'util',name:'Utilities',color:'#AFA9EC',themes:[
+    {id:'util-e',name:'Electric Utilities',color:'#7F77DD',subthemes:[
+      {id:'util-r',name:'Regulated Electric',color:'#1D9E75',domains:[
+        {id:'util-rc',name:'Regulated Utilities',color:'#EF9F27',tickers:[T('NEE','NextEra'),T('DUK','Duke Energy'),T('SO','Southern Co'),T('D','Dominion'),T('AEP','AEP'),T('EXC','Exelon'),T('XEL','Xcel Energy'),T('ED','Consolidated Ed'),T('ETR','Entergy'),T('PEG','PSEG'),T('PCG','PG&E'),T('EIX','Edison Int'),T('WEC','WEC Energy'),T('ES','Eversource'),T('CMS','CMS Energy')]}
       ]}
     ]},
-    { id:'util-water', name:'Water Utilities', color:'#7F77DD', subthemes:[
-      { id:'water-core', name:'Water', color:'#1D9E75', domains:[
-        { id:'water-util', name:'Water Companies', color:'#EF9F27', tickers:[T('AWK','American Water'),T('XYL','Xylem'),T('MSEX','Middlesex Water')] }
+    {id:'util-w',name:'Water Utilities',color:'#7F77DD',subthemes:[
+      {id:'water',name:'Water',color:'#1D9E75',domains:[
+        {id:'water-c',name:'Water Companies',color:'#EF9F27',tickers:[T('AWK','American Water'),T('XYL','Xylem'),T('MSEX','Middlesex Water')]}
       ]}
     ]}
   ]},
-  { id:'comms', name:'Communication Services', color:'#F0997B', themes:[
-    { id:'telco', name:'Telecom', color:'#7F77DD', subthemes:[
-      { id:'telco-wireless', name:'Wireless & Broadband', color:'#1D9E75', domains:[
-        { id:'telco-us', name:'US Carriers', color:'#EF9F27', tickers:[T('T','AT&T'),T('VZ','Verizon'),T('TMUS','T-Mobile'),T('CHTR','Charter')] },
-        { id:'telco-tower', name:'Cell Tower REITs', color:'#EF9F27', tickers:[T('AMT','American Tower'),T('CCI','Crown Castle'),T('SBAC','SBA Comm')] }
+  {id:'comm',name:'Communication Services',color:'#F0997B',themes:[
+    {id:'telco',name:'Telecom',color:'#7F77DD',subthemes:[
+      {id:'telco-w',name:'Wireless & Broadband',color:'#1D9E75',domains:[
+        {id:'telco-us',name:'US Carriers',color:'#EF9F27',tickers:[T('T','AT&T'),T('VZ','Verizon'),T('TMUS','T-Mobile'),T('CHTR','Charter')]},
+        {id:'telco-tw',name:'Cell Tower REITs',color:'#EF9F27',tickers:[T('AMT','American Tower'),T('CCI','Crown Castle'),T('SBAC','SBA Comm')]}
       ]}
     ]},
-    { id:'media', name:'Media & Entertainment', color:'#7F77DD', subthemes:[
-      { id:'media-stream', name:'Streaming & Content', color:'#1D9E75', domains:[
-        { id:'media-ott', name:'OTT Streaming', color:'#EF9F27', tickers:[T('NFLX','Netflix'),T('DIS','Disney'),T('WBD','Warner Bros'),T('PARA','Paramount'),T('FOXA','Fox A')] },
-        { id:'media-social', name:'Social & User Content', color:'#EF9F27', tickers:[T('META','Meta'),T('SNAP','Snap'),T('PINS','Pinterest'),T('RDDT','Reddit')] }
+    {id:'media',name:'Media & Entertainment',color:'#7F77DD',subthemes:[
+      {id:'media-s',name:'Streaming & Content',color:'#1D9E75',domains:[
+        {id:'media-ott',name:'OTT Streaming',color:'#EF9F27',tickers:[T('NFLX','Netflix'),T('DIS','Disney'),T('WBD','Warner Bros'),T('PARA','Paramount'),T('FOXA','Fox A')]},
+        {id:'media-soc',name:'Social & User Content',color:'#EF9F27',tickers:[T('META','Meta'),T('SNAP','Snap'),T('PINS','Pinterest'),T('RDDT','Reddit')]}
       ]}
     ]}
   ]}
 ]};
 
 const DEMO={};
-function seedDemo(n){
-  if(n.tickers) n.tickers.forEach(t=>{ if(!DEMO[t.s]) DEMO[t.s]={'1D':+(Math.random()*8-3).toFixed(2),'1W':+(Math.random()*15-5).toFixed(2),'1M':+(Math.random()*30-10).toFixed(2),'3M':+(Math.random()*60-20).toFixed(2)}; });
-  ['sectors','themes','subthemes','domains'].forEach(k=>{ if(n[k]) n[k].forEach(seedDemo); });
-}
-TAXONOMY.sectors.forEach(seedDemo);
+function seedDemo(n){if(n.tickers)n.tickers.forEach(t=>{if(!DEMO[t.s])DEMO[t.s]={'1D':+(Math.random()*8-3).toFixed(2),'1W':+(Math.random()*15-5).toFixed(2),'1M':+(Math.random()*30-10).toFixed(2),'3M':+(Math.random()*60-20).toFixed(2)};});['sectors','themes','subthemes','domains'].forEach(k=>{if(n[k])n[k].forEach(seedDemo);});}
+TX.sectors.forEach(seedDemo);
 
-let live={}, tf='1D', path=[], isLive=false, pendingSug=null;
+let live={},tf='1D',path=[],isLive=false,pendingSug=null;
 
-function getNode(){
-  if(!path.length) return TAXONOMY;
-  let c=TAXONOMY;
-  for(let id of path){ const l=c.sectors||c.themes||c.subthemes||c.domains; c=l.find(n=>n.id===id); if(!c) return TAXONOMY; }
-  return c;
-}
-function getChildren(n){ return n.sectors||n.themes||n.subthemes||n.domains||[]; }
-function allTickers(n){
-  if(n.tickers) return n.tickers;
-  const a=[];
-  ['sectors','themes','subthemes','domains'].forEach(k=>{ if(n[k]) n[k].forEach(c=>allTickers(c).forEach(t=>{ if(!a.find(x=>x.s===t.s)) a.push(t); })); });
-  return a;
-}
-function getPerf(tickers,key){
-  if(!tickers||!tickers.length) return null;
-  const vals=tickers.map(t=>{ const d=isLive?live[t.s]:DEMO[t.s]; return d?d[key]:null; }).filter(v=>v!==null);
-  return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
-}
-function bgColor(v){
-  if(v===null) return 'var(--bg2)';
-  if(v>=4) return '#15803d'; if(v>=2) return '#16a34a'; if(v>=.5) return '#4ade80'; if(v>=0) return '#bbf7d0';
-  if(v>=-.5) return '#fecaca'; if(v>=-2) return '#f87171'; if(v>=-4) return '#dc2626'; return '#991b1b';
-}
-function textColor(v){ if(v===null) return 'var(--text2)'; return Math.abs(v)>=1.5?'#fff':v>=0?'#14532d':'#7f1d1d'; }
-function fmt(v){ if(v===null||v===undefined) return '—'; return (v>=0?'+':'')+v.toFixed(2)+'%'; }
+function getNode(){if(!path.length)return TX;let c=TX;for(let id of path){const l=c.sectors||c.themes||c.subthemes||c.domains;c=l.find(n=>n.id===id);if(!c)return TX;}return c;}
+function getChildren(n){return n.sectors||n.themes||n.subthemes||n.domains||[];}
+function allT(n){if(n.tickers)return n.tickers;const a=[];['sectors','themes','subthemes','domains'].forEach(k=>{if(n[k])n[k].forEach(c=>allT(c).forEach(t=>{if(!a.find(x=>x.s===t.s))a.push(t);}));});return a;}
+function getPerf(tks,key){if(!tks||!tks.length)return null;const v=tks.map(t=>{const d=isLive?live[t.s]:DEMO[t.s];return d?d[key]:null;}).filter(v=>v!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
+function bg(v){if(v===null)return'var(--bg2)';if(v>=4)return'#15803d';if(v>=2)return'#16a34a';if(v>=.5)return'#4ade80';if(v>=0)return'#bbf7d0';if(v>=-.5)return'#fecaca';if(v>=-2)return'#f87171';if(v>=-4)return'#dc2626';return'#991b1b';}
+function tc(v){if(v===null)return'var(--text2)';return Math.abs(v)>=1.5?'#fff':v>=0?'#14532d':'#7f1d1d';}
+function fmt(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(2)+'%';}
 
-function renderSidebar(){
-  document.getElementById('sectorList').innerHTML=TAXONOMY.sectors.map(s=>{
-    const v=getPerf(allTickers(s),tf);
-    return `<div class="sector-item${path[0]===s.id?' active':''}" onclick="nav('${s.id}')">
-      <span class="s-dot" style="background:${s.color}"></span>
-      <span class="s-name">${s.name}</span>
-      <span class="s-chg ${v>=0?'pos':'neg'}">${fmt(v)}</span>
-    </div>`;
-  }).join('');
-}
-function renderBreadcrumb(){
-  const back=document.getElementById('backBtn');
-  back.style.display=path.length?'inline':'none';
-  if(!path.length){ document.getElementById('breadcrumb').innerHTML='All sectors'; return; }
-  let html=`<span class="bc-link" onclick="nav()">All</span>`,c=TAXONOMY;
-  path.forEach((id,i)=>{
-    const l=c.sectors||c.themes||c.subthemes||c.domains; c=l.find(n=>n.id===id);
-    if(i<path.length-1) html+=`<span class="bc-sep">›</span><span class="bc-link" onclick="navTo(${i+1})">${c.name}</span>`;
-    else html+=`<span class="bc-sep">›</span><span>${c.name}</span>`;
-  });
-  document.getElementById('breadcrumb').innerHTML=html;
-}
-function renderHeatmap(){
-  const area=document.getElementById('heatmapArea');
-  const tickerArea=document.getElementById('tickerArea');
-  const node=getNode();
-  const children=getChildren(node);
+function renderSidebar(){document.getElementById('sectorList').innerHTML=TX.sectors.map(s=>{const v=getPerf(allT(s),tf);return`<div class="sector-item${path[0]===s.id?' active':''}" onclick="nav('${s.id}')"><span class="s-dot" style="background:${s.color}"></span><span class="s-name">${s.name}</span><span class="s-chg ${v!==null&&v>=0?'pos':'neg'}">${fmt(v)}</span></div>`;}).join('');}
+function renderBC(){const back=document.getElementById('backBtn');back.style.display=path.length?'inline':'none';if(!path.length){document.getElementById('breadcrumb').innerHTML='All sectors';return;}let html=`<span class="bcl" onclick="nav()">All</span>`,c=TX;path.forEach((id,i)=>{const l=c.sectors||c.themes||c.subthemes||c.domains;c=l.find(n=>n.id===id);if(i<path.length-1)html+=`<span class="bcs">›</span><span class="bcl" onclick="navTo(${i+1})">${c.name}</span>`;else html+=`<span class="bcs">›</span><span>${c.name}</span>`;});document.getElementById('breadcrumb').innerHTML=html;}
+function renderHM(){
+  const area=document.getElementById('hmArea'),tkArea=document.getElementById('tkArea'),node=getNode(),children=getChildren(node);
   if(!children.length&&node.tickers){
-    area.innerHTML='';
-    tickerArea.style.display='block';
-    document.getElementById('tickerAreaTitle').textContent=node.name+' — tickers';
-    document.getElementById('tickerGrid').innerHTML=node.tickers.map(t=>{
-      const d=isLive?live[t.s]:DEMO[t.s]; const v=d?d[tf]:null;
-      return `<div class="ticker-card"><div class="tc-sym">$${t.s}</div><div class="tc-chg ${v>=0?'pos':'neg'}">${fmt(v)}</div><div class="tc-name">${t.n}</div></div>`;
-    }).join('');
-    return;
+    area.innerHTML='';tkArea.style.display='block';
+    document.getElementById('tkTitle').textContent=node.name+' — tickers';
+    document.getElementById('tkGrid').innerHTML=node.tickers.map(t=>{const d=isLive?live[t.s]:DEMO[t.s];const v=d?d[tf]:null;return`<div class="tk-card"><div class="tk-sym">$${t.s}</div><div class="tk-chg ${v!==null&&v>=0?'pos':'neg'}">${fmt(v)}</div><div class="tk-name">${t.n}</div></div>`;}).join('');return;
   }
-  tickerArea.style.display='none';
+  tkArea.style.display='none';
   const cols=children.length<=2?children.length:children.length<=4?2:children.length<=9?3:4;
-  area.innerHTML=`<div class="heatmap-grid" style="grid-template-columns:repeat(${cols},1fr)">${
-    children.map(child=>{
-      const ticks=allTickers(child); const v=getPerf(ticks,tf);
-      const nl=child.themes?'themes':child.subthemes?'sub-themes':child.domains?'domains':'tickers';
-      return `<div class="heat-cell" style="background:${bgColor(v)};color:${textColor(v)}" onclick="nav('${child.id}')">
-        <div class="hc-name">${child.name}</div>
-        <div class="hc-chg">${fmt(v)}</div>
-        <div class="hc-meta">${ticks.length} tickers</div>
-        <div class="drill-hint">↳ ${nl}</div>
-      </div>`;
-    }).join('')
-  }</div>`;
+  area.innerHTML=`<div class="hm-grid" style="grid-template-columns:repeat(${cols},1fr)">${children.map(child=>{const tks=allT(child);const v=getPerf(tks,tf);const nl=child.themes?'themes':child.subthemes?'sub-themes':child.domains?'domains':'tickers';return`<div class="hm-cell" style="background:${bg(v)};color:${tc(v)}" onclick="nav('${child.id}')"><div class="hc-name">${child.name}</div><div class="hc-chg">${fmt(v)}</div><div class="hc-meta">${tks.length} tickers · avg ${tf}</div><div class="hc-hint">↳ ${nl}</div></div>`;}).join('')}</div>`;
 }
-function render(){ renderSidebar(); renderBreadcrumb(); renderHeatmap(); }
+function render(){renderSidebar();renderBC();renderHM();}
 
-window.nav=function(id){ if(!id){path=[];}else{path.push(id);} render(); };
-window.drillUp=function(){ path.pop(); render(); };
-window.navTo=function(idx){ path=path.slice(0,idx); render(); };
+window.nav=function(id){if(!id){path=[];}else{path.push(id);}render();};
+window.drillUp=function(){path.pop();render();};
+window.navTo=function(idx){path=path.slice(0,idx);render();};
 
-document.getElementById('tfTabs').addEventListener('click',e=>{
-  if(!e.target.dataset.tf) return;
-  tf=e.target.dataset.tf;
-  document.querySelectorAll('.tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));
-  render();
-});
+document.getElementById('tfTabs').addEventListener('click',e=>{if(!e.target.dataset.tf)return;tf=e.target.dataset.tf;document.querySelectorAll('.tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));render();});
 
-async function fetchAllPrices(){
-  const btn=document.getElementById('fetchBtn');
-  btn.textContent='↺ Fetching…'; btn.disabled=true;
-  document.getElementById('statusText').textContent='Fetching live prices from Yahoo Finance…';
-  document.getElementById('pulseDot').className='pulse';
-  const seen=new Set(), allT=[];
-  function collect(n){ if(n.tickers) n.tickers.forEach(t=>{ if(!seen.has(t.s)){seen.add(t.s);allT.push(t);} }); ['sectors','themes','subthemes','domains'].forEach(k=>{ if(n[k]) n[k].forEach(collect); }); }
-  TAXONOMY.sectors.forEach(collect);
-  const chunks=[], syms=allT.map(t=>t.s);
-  for(let i=0;i<syms.length;i+=6) chunks.push(syms.slice(i,i+6));
+async function fetchAll(){
+  const btn=document.getElementById('fetchBtn'),prog=document.getElementById('prog'),fill=document.getElementById('progFill');
+  btn.textContent='Fetching…';btn.disabled=true;prog.style.display='block';fill.style.width='0%';
+  document.getElementById('statusTxt').textContent='Fetching live prices from FMP…';
+  document.getElementById('dot').className='pulse';
+  const seen=new Set(),allSyms=[];
+  function collect(n){if(n.tickers)n.tickers.forEach(t=>{if(!seen.has(t.s)){seen.add(t.s);allSyms.push(t);}});['sectors','themes','subthemes','domains'].forEach(k=>{if(n[k])n[k].forEach(collect);});}
+  TX.sectors.forEach(collect);
+  const syms=allSyms.map(t=>t.s),chunks=[];
+  for(let i=0;i<syms.length;i+=50)chunks.push(syms.slice(i,i+50));
   let ok=0,fail=0;
-  for(const chunk of chunks){
-    await Promise.all(chunk.map(async sym=>{
-      try{
-        const r=await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=3mo&interval=1d`);
-        if(!r.ok) throw new Error();
-        const j=await r.json();
-        const closes=j.chart.result[0].indicators.quote[0].close.filter(Boolean);
-        const n=closes.length; if(n<2) throw new Error();
-        live[sym]={'1D':((closes[n-1]-closes[n-2])/closes[n-2])*100,'1W':((closes[n-1]-closes[Math.max(0,n-6)])/closes[Math.max(0,n-6)])*100,'1M':((closes[n-1]-closes[Math.max(0,n-22)])/closes[Math.max(0,n-22)])*100,'3M':((closes[n-1]-closes[Math.max(0,n-66)])/closes[Math.max(0,n-66)])*100};
-        ok++;
-      } catch(e){ fail++; }
-    }));
-    await new Promise(r=>setTimeout(r,300));
+  for(let ci=0;ci<chunks.length;ci++){
+    try{
+      const r=await fetch(`https://financialmodelingprep.com/api/v3/quote/${chunks[ci].join(',')}?apikey=${KEY}`);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const data=await r.json();
+      if(Array.isArray(data)){
+        data.forEach(q=>{
+          if(q.symbol&&q.changesPercentage!==undefined){
+            live[q.symbol]={'1D':q.changesPercentage||0,'1W':q.changesPercentage||0,'1M':q.changesPercentage||0,'3M':q.changesPercentage||0};
+            ok++;
+          }
+        });
+      }
+    }catch(e){fail+=chunks[ci].length;}
+    fill.style.width=Math.round(((ci+1)/chunks.length)*60)+'%';
+    await new Promise(r=>setTimeout(r,250));
   }
+  // Historical for 1W/1M/3M — fetch top tickers
+  const histSyms=syms.slice(0,60);
+  for(let hi=0;hi<histSyms.length;hi++){
+    const sym=histSyms[hi];
+    try{
+      const r=await fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${sym}?timeseries=65&apikey=${KEY}`);
+      if(!r.ok)continue;
+      const data=await r.json();
+      const hist=data.historical;
+      if(!hist||hist.length<2)continue;
+      const p0=hist[0].close;
+      if(live[sym]){
+        live[sym]['1W']=hist[5]?((p0-hist[5].close)/hist[5].close)*100:live[sym]['1D'];
+        live[sym]['1M']=hist[21]?((p0-hist[21].close)/hist[21].close)*100:live[sym]['1D'];
+        live[sym]['3M']=hist[63]?((p0-hist[63].close)/hist[63].close)*100:live[sym]['1D'];
+      }
+    }catch(e){}
+    fill.style.width=(60+Math.round(((hi+1)/histSyms.length)*40))+'%';
+    await new Promise(r=>setTimeout(r,120));
+  }
+  prog.style.display='none';
   if(ok>0){
     isLive=true;
     document.getElementById('demoBadge').style.display='none';
     document.getElementById('liveBadge').style.display='inline';
-    document.getElementById('pulseDot').className='pulse live';
-    document.getElementById('statusText').textContent=`Live · ${ok} tickers loaded · ${fail} skipped · ${new Date().toLocaleTimeString()}`;
-  } else {
-    document.getElementById('statusText').textContent='Yahoo Finance blocked (CORS) in browser — try opening via a local server or use FMP key';
+    document.getElementById('dot').className='pulse live';
+    document.getElementById('statusTxt').textContent=`Live · ${ok} tickers · updated ${new Date().toLocaleTimeString()} · click any cell to drill down`;
+  }else{
+    document.getElementById('statusTxt').textContent=`Could not load data — check API key or network`;
   }
-  btn.textContent='↺ Live prices'; btn.disabled=false;
+  btn.textContent='↺ Fetch live prices';btn.disabled=false;
   render();
 }
 
 window.runAI=async function(){
   const input=document.getElementById('aiInput').value.trim();
-  if(!input) return;
-  const el=document.getElementById('aiResult');
-  const btn=document.getElementById('aiBtn');
-  el.innerHTML='<div class="thinking">Thinking…</div>';
+  if(!input)return;
+  const el=document.getElementById('aiResult'),btn=document.getElementById('aiBtn');
+  el.innerHTML='<div class="msg info">Thinking…</div>';
   btn.disabled=true;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
-        system:`You are a financial taxonomy expert. Respond ONLY with a valid JSON object, no markdown, no backticks, no explanation. Fields:
-{"theme":"string","parentSector":"one of: Technology|Health Care|Energy|Financials|Consumer|Industrials|Real Estate|Materials|Utilities|Communication Services","parentTheme":"string","subtheme":"string","domains":[{"name":"string","tickers":["TICK1","TICK2","TICK3"]}],"rationale":"one sentence"}
-2-4 domains, 3-5 real US-listed tickers each.`,
-        messages:[{role:'user',content:`Theme: ${input}`}]})
-    });
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`You are a financial taxonomy expert. Respond ONLY with a valid JSON object, no markdown, no backticks, no explanation. Fields: {"theme":"string","parentSector":"one of: Technology|Health Care|Energy|Financials|Consumer|Industrials|Real Estate|Materials|Utilities|Communication Services","parentTheme":"string","subtheme":"string","domains":[{"name":"string","tickers":["TICK1","TICK2","TICK3"]}],"rationale":"one sentence"} 2-4 domains, 3-5 real US-listed tickers each.`,messages:[{role:'user',content:`Theme: ${input}`}]})});
     const data=await res.json();
     const text=data.content.map(c=>c.text||'').join('');
     const parsed=JSON.parse(text.replace(/```[a-z]*|```/g,'').trim());
     pendingSug=parsed;
-    let html=`<div class="ai-suggestion">
-      <div class="sug-row"><span class="sug-lbl">Sector</span><span class="sug-val">${parsed.parentSector}</span></div>
-      <div class="sug-row"><span class="sug-lbl">Theme</span><span class="sug-val">${parsed.parentTheme}</span></div>
-      <div class="sug-row"><span class="sug-lbl">Sub-theme</span><span class="sug-val">${parsed.subtheme}</span></div>
-      <div class="sug-rationale">${parsed.rationale}</div>`;
-    parsed.domains.forEach(d=>{
-      html+=`<div class="sug-domain"><div class="sug-domain-name">${d.name}</div><div class="ticker-pills">${d.tickers.map(t=>`<span class="tp">$${t}</span>`).join('')}</div></div>`;
-    });
+    let html=`<div class="ai-sug"><div class="sug-row"><span class="sug-lbl">Sector</span><span class="sug-val">${parsed.parentSector}</span></div><div class="sug-row"><span class="sug-lbl">Theme</span><span class="sug-val">${parsed.parentTheme}</span></div><div class="sug-row"><span class="sug-lbl">Sub-theme</span><span class="sug-val">${parsed.subtheme}</span></div><div class="sug-rat">${parsed.rationale}</div>`;
+    parsed.domains.forEach(d=>{html+=`<div class="sug-dom"><div class="sug-dom-name">${d.name}</div><div class="tpills">${d.tickers.map(t=>`<span class="tp">$${t}</span>`).join('')}</div></div>`;});
     html+=`<button class="add-btn" id="addBtn">+ Add to taxonomy</button></div>`;
     el.innerHTML=html;
-    document.getElementById('addBtn').onclick=addSuggestion;
-  } catch(e){
-    el.innerHTML=`<div class="err-msg">Error: ${e.message||'Could not parse response'}</div>`;
-  }
+    document.getElementById('addBtn').onclick=addSug;
+  }catch(e){el.innerHTML=`<div class="msg err">Error: ${e.message||'Could not parse response'}</div>`;}
   btn.disabled=false;
 };
 
-function addSuggestion(){
-  if(!pendingSug) return;
+function addSug(){
+  if(!pendingSug)return;
   const p=pendingSug;
-  let sector=TAXONOMY.sectors.find(s=>s.name===p.parentSector)||TAXONOMY.sectors[0];
+  let sector=TX.sectors.find(s=>s.name===p.parentSector)||TX.sectors[0];
   let theme=sector.themes.find(t=>t.name===p.parentTheme);
-  if(!theme){ theme={id:'t'+Date.now(),name:p.parentTheme,color:'#7F77DD',subthemes:[]}; sector.themes.push(theme); }
+  if(!theme){theme={id:'t'+Date.now(),name:p.parentTheme,color:'#7F77DD',subthemes:[]};sector.themes.push(theme);}
   const st={id:'st'+Date.now(),name:p.subtheme,color:'#1D9E75',domains:p.domains.map((d,i)=>({id:'d'+Date.now()+i,name:d.name,color:'#EF9F27',tickers:d.tickers.map(s=>({s,n:s}))}))};
   theme.subthemes.push(st);
-  st.domains.forEach(dom=>dom.tickers.forEach(t=>{ if(!DEMO[t.s]) DEMO[t.s]={'1D':+(Math.random()*8-3).toFixed(2),'1W':+(Math.random()*15-5).toFixed(2),'1M':+(Math.random()*30-10).toFixed(2),'3M':+(Math.random()*60-20).toFixed(2)}; }));
+  st.domains.forEach(dom=>dom.tickers.forEach(t=>{if(!DEMO[t.s])DEMO[t.s]={'1D':+(Math.random()*8-3).toFixed(2),'1W':+(Math.random()*15-5).toFixed(2),'1M':+(Math.random()*30-10).toFixed(2),'3M':+(Math.random()*60-20).toFixed(2)};}));
   pendingSug=null;
-  document.getElementById('aiResult').innerHTML=`<div class="success-msg">Added "${p.subtheme}" → ${sector.name} › ${theme.name}</div>`;
+  document.getElementById('aiResult').innerHTML=`<div class="msg ok">Added "${p.subtheme}" → ${sector.name} › ${theme.name}</div>`;
   document.getElementById('aiInput').value='';
   render();
 }
