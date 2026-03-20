@@ -34,18 +34,3 @@ exports.handler = async function(event) {
   }
 };
 ```
-
-Click **Commit new file**.
-
-**Step 2 — Create netlify.toml**
-
-Back in your repo → "Add file" → "Create new file" → name it exactly:
-```
-netlify.toml
-[build]
-  functions = "netlify/functions"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
