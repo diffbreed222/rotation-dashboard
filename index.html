@@ -82,7 +82,7 @@
   .pulse{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0}
   .pulse.live{background:#22c55e}
   .prog{height:3px;background:var(--info-bg)}
-  .prog-fill{height:100%;background:#378ADD;transition:width .3s;border-radius:2px}
+  .prog-fill{height:100%;background:#378ADD;transition:width .2s;border-radius:2px;width:0%}
 </style>
 </head>
 <body>
@@ -90,7 +90,7 @@
   <div class="topbar">
     <div>
       <div class="brand-title">Thematic Rotation Dashboard</div>
-      <div class="brand-sub">SP500 · NDX100 · DJIA · 5-level deep · AI-assisted · FMP live data</div>
+      <div class="brand-sub">SP500 · NDX100 · DJIA · 5-level deep · AI-assisted · Tiingo live data</div>
     </div>
     <div class="topbar-right">
       <span id="demoBadge" class="badge badge-warn">DEMO</span>
@@ -125,11 +125,11 @@
           <div class="breadcrumb" id="breadcrumb">All sectors</div>
           <button class="back-btn" id="backBtn" style="display:none" onclick="drillUp()">← Back</button>
         </div>
-        <div class="prog" id="prog" style="display:none"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog" id="prog" style="display:none"><div class="prog-fill" id="progFill"></div></div>
         <div id="hmArea"></div>
         <div class="status-row">
           <span class="pulse" id="dot"></span>
-          <span id="statusTxt">Demo data · click "Fetch live prices" to load real market data</span>
+          <span id="statusTxt">Demo data · click "Fetch live prices" to load real market data · click any cell to drill down</span>
         </div>
       </div>
       <div id="tkArea" style="display:none" class="tk-area">
@@ -140,7 +140,7 @@
   </div>
 </div>
 <script>
-const KEY='Av0u9F1KmpP7gU5TtkMODeOkMMK5wH6D';
+const TIINGO_KEY='1b5507b37831fc3cd148a1dc3fffb26f4993f753';
 const T=(s,n)=>({s,n});
 const TX={sectors:[
   {id:'tech',name:'Technology',color:'#378ADD',themes:[
@@ -395,8 +395,8 @@ function getNode(){if(!path.length)return TX;let c=TX;for(let id of path){const 
 function getChildren(n){return n.sectors||n.themes||n.subthemes||n.domains||[];}
 function allT(n){if(n.tickers)return n.tickers;const a=[];['sectors','themes','subthemes','domains'].forEach(k=>{if(n[k])n[k].forEach(c=>allT(c).forEach(t=>{if(!a.find(x=>x.s===t.s))a.push(t);}));});return a;}
 function getPerf(tks,key){if(!tks||!tks.length)return null;const v=tks.map(t=>{const d=isLive?live[t.s]:DEMO[t.s];return d?d[key]:null;}).filter(v=>v!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
-function bg(v){if(v===null)return'var(--bg2)';if(v>=4)return'#15803d';if(v>=2)return'#16a34a';if(v>=.5)return'#4ade80';if(v>=0)return'#bbf7d0';if(v>=-.5)return'#fecaca';if(v>=-2)return'#f87171';if(v>=-4)return'#dc2626';return'#991b1b';}
-function tc(v){if(v===null)return'var(--text2)';return Math.abs(v)>=1.5?'#fff':v>=0?'#14532d':'#7f1d1d';}
+function bgCol(v){if(v===null)return'var(--bg2)';if(v>=4)return'#15803d';if(v>=2)return'#16a34a';if(v>=.5)return'#4ade80';if(v>=0)return'#bbf7d0';if(v>=-.5)return'#fecaca';if(v>=-2)return'#f87171';if(v>=-4)return'#dc2626';return'#991b1b';}
+function txCol(v){if(v===null)return'var(--text2)';return Math.abs(v)>=1.5?'#fff':v>=0?'#14532d':'#7f1d1d';}
 function fmt(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(2)+'%';}
 
 function renderSidebar(){document.getElementById('sectorList').innerHTML=TX.sectors.map(s=>{const v=getPerf(allT(s),tf);return`<div class="sector-item${path[0]===s.id?' active':''}" onclick="nav('${s.id}')"><span class="s-dot" style="background:${s.color}"></span><span class="s-name">${s.name}</span><span class="s-chg ${v!==null&&v>=0?'pos':'neg'}">${fmt(v)}</span></div>`;}).join('');}
@@ -410,73 +410,101 @@ function renderHM(){
   }
   tkArea.style.display='none';
   const cols=children.length<=2?children.length:children.length<=4?2:children.length<=9?3:4;
-  area.innerHTML=`<div class="hm-grid" style="grid-template-columns:repeat(${cols},1fr)">${children.map(child=>{const tks=allT(child);const v=getPerf(tks,tf);const nl=child.themes?'themes':child.subthemes?'sub-themes':child.domains?'domains':'tickers';return`<div class="hm-cell" style="background:${bg(v)};color:${tc(v)}" onclick="nav('${child.id}')"><div class="hc-name">${child.name}</div><div class="hc-chg">${fmt(v)}</div><div class="hc-meta">${tks.length} tickers · avg ${tf}</div><div class="hc-hint">↳ ${nl}</div></div>`;}).join('')}</div>`;
+  area.innerHTML=`<div class="hm-grid" style="grid-template-columns:repeat(${cols},1fr)">${children.map(child=>{const tks=allT(child);const v=getPerf(tks,tf);const nl=child.themes?'themes':child.subthemes?'sub-themes':child.domains?'domains':'tickers';return`<div class="hm-cell" style="background:${bgCol(v)};color:${txCol(v)}" onclick="nav('${child.id}')"><div class="hc-name">${child.name}</div><div class="hc-chg">${fmt(v)}</div><div class="hc-meta">${tks.length} tickers · avg ${tf}</div><div class="hc-hint">↳ ${nl}</div></div>`;}).join('')}</div>`;
 }
 function render(){renderSidebar();renderBC();renderHM();}
 
 window.nav=function(id){if(!id){path=[];}else{path.push(id);}render();};
 window.drillUp=function(){path.pop();render();};
 window.navTo=function(idx){path=path.slice(0,idx);render();};
-
 document.getElementById('tfTabs').addEventListener('click',e=>{if(!e.target.dataset.tf)return;tf=e.target.dataset.tf;document.querySelectorAll('.tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));render();});
 
 async function fetchAll(){
   const btn=document.getElementById('fetchBtn'),prog=document.getElementById('prog'),fill=document.getElementById('progFill');
-  btn.textContent='Fetching…';btn.disabled=true;prog.style.display='block';fill.style.width='0%';
-  document.getElementById('statusTxt').textContent='Fetching live prices from FMP…';
+  btn.textContent='Fetching…';btn.disabled=true;prog.style.display='block';fill.style.width='5%';
+  document.getElementById('statusTxt').textContent='Fetching live prices from Tiingo…';
   document.getElementById('dot').className='pulse';
+
+  // Collect all unique tickers
   const seen=new Set(),allSyms=[];
-  function collect(n){if(n.tickers)n.tickers.forEach(t=>{if(!seen.has(t.s)){seen.add(t.s);allSyms.push(t);}});['sectors','themes','subthemes','domains'].forEach(k=>{if(n[k])n[k].forEach(collect);});}
+  function collect(n){if(n.tickers)n.tickers.forEach(t=>{if(!seen.has(t.s)){seen.add(t.s);allSyms.push(t.s);}});['sectors','themes','subthemes','domains'].forEach(k=>{if(n[k])n[k].forEach(collect);});}
   TX.sectors.forEach(collect);
-  const syms=allSyms.map(t=>t.s),chunks=[];
-  for(let i=0;i<syms.length;i+=50)chunks.push(syms.slice(i,i+50));
+
+  // Step 1: Batch IEX quote (1D) — Tiingo allows comma-separated
   let ok=0,fail=0;
+  const BATCH=100;
+  const chunks=[];
+  for(let i=0;i<allSyms.length;i+=BATCH)chunks.push(allSyms.slice(i,i+BATCH));
+
   for(let ci=0;ci<chunks.length;ci++){
     try{
-      const r=await fetch(`https://financialmodelingprep.com/api/v3/quote/${chunks[ci].join(',')}?apikey=${KEY}`);
+      const url=`https://api.tiingo.com/iex/?tickers=${chunks[ci].join(',')}&token=${TIINGO_KEY}`;
+      const r=await fetch(url,{headers:{Accept:'application/json'}});
       if(!r.ok)throw new Error('HTTP '+r.status);
       const data=await r.json();
       if(Array.isArray(data)){
         data.forEach(q=>{
-          if(q.symbol&&q.changesPercentage!==undefined){
-            live[q.symbol]={'1D':q.changesPercentage||0,'1W':q.changesPercentage||0,'1M':q.changesPercentage||0,'3M':q.changesPercentage||0};
-            ok++;
-          }
+          if(!q.ticker)return;
+          const sym=q.ticker.toUpperCase();
+          const last=q.tngoLast||q.last||q.mid;
+          const prev=q.prevClose;
+          const chg1D=(last&&prev&&prev!==0)?((last-prev)/prev)*100:0;
+          live[sym]={'1D':chg1D,'1W':chg1D,'1M':chg1D,'3M':chg1D};
+          ok++;
         });
       }
     }catch(e){fail+=chunks[ci].length;}
-    fill.style.width=Math.round(((ci+1)/chunks.length)*60)+'%';
-    await new Promise(r=>setTimeout(r,250));
+    fill.style.width=Math.round(10+((ci+1)/chunks.length)*40)+'%';
+    await new Promise(r=>setTimeout(r,200));
   }
-  // Historical for 1W/1M/3M — fetch top tickers
-  const histSyms=syms.slice(0,60);
-  for(let hi=0;hi<histSyms.length;hi++){
-    const sym=histSyms[hi];
-    try{
-      const r=await fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${sym}?timeseries=65&apikey=${KEY}`);
-      if(!r.ok)continue;
-      const data=await r.json();
-      const hist=data.historical;
-      if(!hist||hist.length<2)continue;
-      const p0=hist[0].close;
-      if(live[sym]){
-        live[sym]['1W']=hist[5]?((p0-hist[5].close)/hist[5].close)*100:live[sym]['1D'];
-        live[sym]['1M']=hist[21]?((p0-hist[21].close)/hist[21].close)*100:live[sym]['1D'];
-        live[sym]['3M']=hist[63]?((p0-hist[63].close)/hist[63].close)*100:live[sym]['1D'];
-      }
-    }catch(e){}
-    fill.style.width=(60+Math.round(((hi+1)/histSyms.length)*40))+'%';
-    await new Promise(r=>setTimeout(r,120));
+
+  // Step 2: Historical EOD for 1W/1M/3M — batch via Tiingo daily endpoint
+  // Fetch all tickers that got a 1D quote, in batches using the bulk daily endpoint
+  const today=new Date();
+  const d3m=new Date(today);d3m.setDate(d3m.getDate()-95);
+  const startDate=d3m.toISOString().split('T')[0];
+
+  const histSyms=allSyms.filter(s=>live[s]);
+  const histChunks=[];
+  for(let i=0;i<histSyms.length;i+=20)histChunks.push(histSyms.slice(i,i+20));
+
+  for(let hi=0;hi<histChunks.length;hi++){
+    await Promise.all(histChunks[hi].map(async sym=>{
+      try{
+        const url=`https://api.tiingo.com/tiingo/daily/${sym}/prices?startDate=${startDate}&token=${TIINGO_KEY}`;
+        const r=await fetch(url,{headers:{Accept:'application/json'}});
+        if(!r.ok)return;
+        const data=await r.json();
+        if(!Array.isArray(data)||data.length<2)return;
+        // data is sorted oldest→newest
+        const n=data.length;
+        const p0=data[n-1].adjClose||data[n-1].close;
+        const p1w=data[Math.max(0,n-6)].adjClose||data[Math.max(0,n-6)].close;
+        const p1m=data[Math.max(0,n-22)].adjClose||data[Math.max(0,n-22)].close;
+        const p3m=data[0].adjClose||data[0].close;
+        if(live[sym]){
+          live[sym]['1W']=((p0-p1w)/p1w)*100;
+          live[sym]['1M']=((p0-p1m)/p1m)*100;
+          live[sym]['3M']=((p0-p3m)/p3m)*100;
+        }
+      }catch(e){}
+    }));
+    fill.style.width=Math.round(50+((hi+1)/histChunks.length)*48)+'%';
+    await new Promise(r=>setTimeout(r,300));
   }
+
+  fill.style.width='100%';
+  await new Promise(r=>setTimeout(r,200));
   prog.style.display='none';
+
   if(ok>0){
     isLive=true;
     document.getElementById('demoBadge').style.display='none';
     document.getElementById('liveBadge').style.display='inline';
     document.getElementById('dot').className='pulse live';
-    document.getElementById('statusTxt').textContent=`Live · ${ok} tickers · updated ${new Date().toLocaleTimeString()} · click any cell to drill down`;
+    document.getElementById('statusTxt').textContent=`Live · ${ok} tickers · 1D/1W/1M/3M loaded · updated ${new Date().toLocaleTimeString()}`;
   }else{
-    document.getElementById('statusTxt').textContent=`Could not load data — check API key or network`;
+    document.getElementById('statusTxt').textContent=`Could not load data — check network or API key`;
   }
   btn.textContent='↺ Fetch live prices';btn.disabled=false;
   render();
@@ -486,8 +514,7 @@ window.runAI=async function(){
   const input=document.getElementById('aiInput').value.trim();
   if(!input)return;
   const el=document.getElementById('aiResult'),btn=document.getElementById('aiBtn');
-  el.innerHTML='<div class="msg info">Thinking…</div>';
-  btn.disabled=true;
+  el.innerHTML='<div class="msg info">Thinking…</div>';btn.disabled=true;
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`You are a financial taxonomy expert. Respond ONLY with a valid JSON object, no markdown, no backticks, no explanation. Fields: {"theme":"string","parentSector":"one of: Technology|Health Care|Energy|Financials|Consumer|Industrials|Real Estate|Materials|Utilities|Communication Services","parentTheme":"string","subtheme":"string","domains":[{"name":"string","tickers":["TICK1","TICK2","TICK3"]}],"rationale":"one sentence"} 2-4 domains, 3-5 real US-listed tickers each.`,messages:[{role:'user',content:`Theme: ${input}`}]})});
     const data=await res.json();
